@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Weighted Decision Picker — Choices</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="index">
+  <main class="container">
+    <h1>Weighted Decision Picker</h1>
+    <p class="lead">Enter choices, give each a weight (higher weight = higher chance), then <strong>Spin</strong> to pick one.</p>
+
+    <section class="card" id="editor">
+      <h2>Choices</h2>
+
+      <form id="addForm" class="row" novalidate>
+        <input id="newLabel" placeholder="Label (e.g. "Pizza")" aria-label="New choice label">
+        <input id="newWeight" type="number" min="0.01" step="0.01" placeholder="Weight (> 0)" aria-label="New choice weight">
+        <button id="addBtn" type="submit">Add</button>
+      </form>
+
+      <div id="choicesWrap" class="table-wrap" aria-live="polite"></div>
+
+      <div class="actions">
+        <button id="saveBtn">Save</button>
+        <button id="clearBtn" class="muted">Clear</button>
+        <a class="btn-link" href="presets.html">Use a preset</a>
+        <button id="toSpinBtn" class="primary">Spin</button>
+      </div>
+
+      <div id="msg" role="status" class="message"></div>
+    </section>
+
+    <section class="card" id="historyCard">
+      <h2>Recent results</h2>
+      <ul id="historyList" class="history-list"></ul>
+      <div class="muted small">History is saved to <code>localStorage</code> under <code>wdp_history</code>.</div>
+    </section>
+
+    <footer class="foot muted small">Data contract: <code>wdp_choices</code>, <code>wdp_history</code>, <code>wdp_preset</code>. See <code>no-framework/data_</code>.</footer>
+  </main>
+  <script src="main.js" defer></script>
+</body>
+</html>

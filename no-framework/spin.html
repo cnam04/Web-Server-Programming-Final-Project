@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Weighted Decision Picker — Spin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="spin">
+  <main class="container narrow">
+    <h1>Spin</h1>
+
+    <section class="card center" id="spinnerCard">
+      <div id="spinner" class="spinner" aria-live="polite">—</div>
+      <div class="controls">
+        <button id="spinBtn" class="primary large">Spin</button>
+        <a href="index.html" id="backBtn" class="btn-link">Back to choices</a>
+      </div>
+      <div id="spinMsg" class="message" role="status"></div>
+    </section>
+
+    <section class="card" id="spinHistory">
+      <h2>History</h2>
+      <ul id="historyList" class="history-list"></ul>
+    </section>
+
+    <footer class="foot muted small">Uses <code>wdp_choices</code> and writes <code>wdp_history</code> (newest first).</footer>
+  </main>
+  <script src="main.js" defer></script>
+</body>
+</html>
