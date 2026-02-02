@@ -1,0 +1,73 @@
+body{
+    background-color: rgb(231, 255, 245);
+    padding: 0;
+    margin: 0;
+}
+header {
+    background-color: forestgreen;
+    text-align: left;
+}
+
+.card {
+    border-left-style: solid;
+    border-left-width: 5px;
+    border-left-color: limegreen;
+    background-color: white;
+    font: arial;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 25px 25px 10px 25px;
+    text-align: left;
+    padding-top: 5px;
+    padding-bottom: 10px;
+}
+#secondary-div{
+    border-left-color:rgb(245, 245, 49);
+}
+h1 {
+    font-size: larger;
+    margin-left: 15px;
+}
+
+p {
+    margin-left: 15px;
+}
+ul{
+    list-style-type: none;
+    margin: 0;
+    padding-left:5px;
+    background-color: rgb(53, 156, 53);
+    display:flex;
+}
+.hover-list{
+    list-style-type: none;
+    margin: 0;
+    padding-left:5px;
+    background-color: rgb(53, 156, 53);
+    display:inline
+}
+
+.hover-list-item{
+    display: block;
+    text-align: center;
+    padding: 5px 65px 5px 5px;
+    font-family:Arial, Helvetica, sans-serif;
+    font-size: large;
+}
+ul li{
+    display: block;
+    text-align: center;
+    padding: 5px 65px 5px 5px;
+    font-family:Arial, Helvetica, sans-serif;
+    font-size: large;
+}
+.dropdown{
+    position:relative;
+}
+.dropdown-item{
+    display:none;
+    position: absolute;
+    background-color: lawngreen;
+}
+.dropdown:hover .dropdown-item{
+    display:block;
+}
