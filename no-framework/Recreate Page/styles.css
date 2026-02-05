@@ -15,7 +15,7 @@ header {
     background-color: white;
     font: arial;
     font-family: Arial, Helvetica, sans-serif;
-    margin: 25px 25px 10px 25px;
+    margin: 25px 25px 27px 25px;
     text-align: left;
     padding-top: 5px;
     padding-bottom: 10px;
@@ -24,50 +24,64 @@ header {
     border-left-color:rgb(245, 245, 49);
 }
 h1 {
-    font-size: larger;
+    padding-top: 0px;
+    font-size: 19px;
     margin-left: 15px;
 }
 
 p {
     margin-left: 15px;
-}
-ul{
-    list-style-type: none;
-    margin: 0;
-    padding-left:5px;
-    background-color: rgb(53, 156, 53);
-    display:flex;
-}
-.hover-list{
-    list-style-type: none;
-    margin: 0;
-    padding-left:5px;
-    background-color: rgb(53, 156, 53);
-    display:inline
+    margin-right: 15px;
 }
 
-.hover-list-item{
-    display: block;
-    text-align: center;
-    padding: 5px 65px 5px 5px;
-    font-family:Arial, Helvetica, sans-serif;
-    font-size: large;
+.navbar {
+    background-color:green;
+    display:flex
 }
-ul li{
-    display: block;
-    text-align: center;
-    padding: 5px 65px 5px 5px;
-    font-family:Arial, Helvetica, sans-serif;
-    font-size: large;
+.navbar .dropdown:hover{
+    background-color: forestgreen;
 }
-.dropdown{
-    position:relative;
+
+.dropdown-content a:hover {
+    background-color: lightgreen;
 }
-.dropdown-item{
-    display:none;
+.navbar a{
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:16px;
+    color: rgb(10, 16, 16);
+}
+.dropdown .dropbtn{
+    font-size:18px;
+    border:none;
+    font-family: Arial, Helvetica, sans-serif;
+    color:black;
+    background-color:forestgreen;
+    padding: 5px 59px 5px 10px;
+    background-color: inherit;
+}
+.dropbtn{
+    padding-right: 50px;
+}
+.dropdown-content{
     position: absolute;
-    background-color: lawngreen;
+    background-color: forestgreen;
+    min-width: 100px;
+    
+    display:none;
+    border-right: 17px;
 }
-.dropdown:hover .dropdown-item{
-    display:block;
+.dropdown-content a{
+    display: block;
+    padding-left: 10px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    padding-right: 10px;
+    
+}
+.dropdown:hover .dropdown-content{
+    display: block;
+}
+.dropdown:hover{
+    color: lightgreen;
 }
