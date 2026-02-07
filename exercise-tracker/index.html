@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise Tracker – Dashboard</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="brand">🏋️ Exercise Tracker</div>
+    <ul class="nav-links">
+      <li><a href="./index.html">Dashboard</a></li>
+      <li><a href="./log.html">Log</a></li>
+      <li><a href="./stats.html">Stats</a></li>
+      <li><button id="themeToggle" class="theme-toggle" title="Toggle theme">🌙</button></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+
+    <!-- Today's Summary -->
+    <h1>Dashboard</h1>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="number" id="todayCount">0</div>
+        <div class="label">Exercises Today</div>
+      </div>
+      <div class="summary-item">
+        <div class="number" id="todayMinutes">0</div>
+        <div class="label">Minutes Today</div>
+      </div>
+    </div>
+
+    <!-- Add Exercise Form -->
+    <div class="card">
+      <h2>Add Exercise</h2>
+      <form id="exerciseForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="entryDate">Date</label>
+            <input type="date" id="entryDate" name="date" required>
+          </div>
+          <div class="form-group">
+            <label for="activity">Activity</label>
+            <input type="text" id="activity" name="activity" placeholder="e.g. Bench Press" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+              <option value="Strength">Strength</option>
+              <option value="Cardio">Cardio</option>
+              <option value="Mobility">Mobility</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="durationMin">Duration (minutes)</label>
+            <input type="number" id="durationMin" name="durationMin" min="1" placeholder="30" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="sets">Sets <small>(optional)</small></label>
+            <input type="number" id="sets" name="sets" min="0" placeholder="3">
+          </div>
+          <div class="form-group">
+            <label for="reps">Reps <small>(optional)</small></label>
+            <input type="number" id="reps" name="reps" min="0" placeholder="10">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="weight">Weight (lbs) <small>(optional)</small></label>
+            <input type="number" id="weight" name="weight" min="0" placeholder="135">
+          </div>
+          <div class="form-group"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Notes <small>(optional)</small></label>
+          <textarea id="notes" name="notes" placeholder="How did it feel?"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Save Exercise</button>
+      </form>
+    </div>
+
+    <!-- Coming Soon Sections -->
+    <div class="card coming-soon">
+      <h2>🔐 Sign In <span class="badge">Coming Soon</span></h2>
+      <p class="tooltip-text">Sign in to sync your data across devices. (Requires a future backend.)</p>
+      <button class="btn btn-outline" disabled>Sign In with Google</button>
+    </div>
+
+    <div class="card coming-soon">
+      <h2>☁️ Cloud Sync <span class="badge">Coming Soon</span></h2>
+      <p class="tooltip-text">Automatically back up your exercises to the cloud.</p>
+      <button class="btn btn-outline" disabled>Enable Sync</button>
+    </div>
+
+    <div class="card coming-soon">
+      <h2>👥 Social Feed <span class="badge">Coming Soon</span></h2>
+      <p class="tooltip-text">See what your friends are working on and cheer them on!</p>
+      <button class="btn btn-outline" disabled>View Feed</button>
+    </div>
+
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

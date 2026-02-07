@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise Tracker – Stats</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="brand">🏋️ Exercise Tracker</div>
+    <ul class="nav-links">
+      <li><a href="./index.html">Dashboard</a></li>
+      <li><a href="./log.html">Log</a></li>
+      <li><a href="./stats.html">Stats</a></li>
+      <li><button id="themeToggle" class="theme-toggle" title="Toggle theme">🌙</button></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+
+    <h1>Statistics</h1>
+
+    <!-- Last 7 Days Summary -->
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="number" id="weekWorkouts">0</div>
+        <div class="label">Workouts (Last 7 Days)</div>
+      </div>
+      <div class="summary-item">
+        <div class="number" id="weekMinutes">0</div>
+        <div class="label">Minutes (Last 7 Days)</div>
+      </div>
+    </div>
+
+    <!-- Bar Chart -->
+    <div class="chart-container">
+      <h2>Daily Minutes – Last 7 Days</h2>
+      <canvas id="weekChart"></canvas>
+    </div>
+
+    <!-- Personal Bests -->
+    <div class="card">
+      <h2>🏆 Personal Bests</h2>
+      <div class="summary-grid" id="personalBests">
+        <p style="color:var(--text-muted)">Loading…</p>
+      </div>
+    </div>
+
+    <!-- Coming Soon Placeholders -->
+    <div class="card coming-soon">
+      <h2>📈 Progress Charts <span class="badge">Coming Soon</span></h2>
+      <p class="tooltip-text">Track your weight, reps, and volume over time with detailed charts. (Requires more data + a charting library.)</p>
+    </div>
+
+    <div class="card coming-soon">
+      <h2>🎯 Goals &amp; Streaks <span class="badge">Coming Soon</span></h2>
+      <p class="tooltip-text">Set weekly goals and track your workout streaks. (Planned for a future update.)</p>
+    </div>
+
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
