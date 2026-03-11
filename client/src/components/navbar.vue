@@ -4,45 +4,45 @@
 <nav class="navbar" role="navigation" aria-label="main navigation">
   <div id="navbarBasicExample" class="navbar-menu" :class="{ 'is-active': isMenuOpen }">
     <div class="navbar-start">
-      <a class="navbar-item" @click="closeMenu">
-        Home
-      </a>
+      <RouterLink to="/"class="navbar-item" @click="closeMenu">
+        My Activities
+      </RouterLink>
 
-      <a class="navbar-item" @click="closeMenu">
-        Documentation
-      </a>
-
+      
       <div class="navbar-item has-dropdown is-hoverable" :class="{ 'is-active': isMoreOpen }">
-        <a class="navbar-link" @click.prevent="toggleMore">
-          More
+        <a class="navbar-link">
+          Social
         </a>
 
         <div class="navbar-dropdown">
-          <a class="navbar-item" @click="closeAllMenus">
-            About
-          </a>
-          <a class="navbar-item is-selected" @click="closeAllMenus">
-            Jobs
-          </a>
-          <a class="navbar-item" @click="closeAllMenus">
-            Contact
-          </a>
-          <hr class="navbar-divider">
-          <a class="navbar-item" @click="closeAllMenus">
-            Report an issue
-          </a>
+          <RouterLink to="/friend-activity" class="navbar-item" @click="closeMenu">
+            Friend Activity
+          </RouterLink>
+        
+          <RouterLink to="/add-friends" class="navbar-item" @click="closeMenu">
+            Add friends
+          </RouterLink>
+        </div>
+      </div>
+      <div class="navbar-item has-dropdown is-hoverable" :class="{ 'is-active': isMoreOpen }">
+        <a class="navbar-link">
+          Admin
+        </a>
+
+        <div class="navbar-dropdown">
+          <RouterLink to="/admin" class="navbar-item" @click="closeAllMenus">
+            Dashboard
+          </RouterLink>
         </div>
       </div>
     </div>
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
-          <a class="button is-primary">
-            <strong>Sign up</strong>
-          </a>
-          <a class="button is-light" @click="closeMenu">
+          <addActivity> </addActivity>
+          <RouterLink to="/login" class="button is-light" @click="closeMenu">
             Log in
-          </a>
+          </RouterLink>
         </div>
       </div>
     </div>
@@ -50,35 +50,53 @@
 </nav>
 
 
+
 </template>
 <script>
-export default {
+import { defineComponent, ref } from 'vue';
+import addActivity from './addActivity.vue';
+
+export default defineComponent({
+  components: {
+    addActivity
+  },
   name: 'Navbar',
-  data() {
+  setup() {
+    const isMenuOpen = ref(false);
+    const isMoreOpen = ref(false);
+
+
+
+    const toggleMenu = () => { d
+      isMenuOpen.value = !isMenuOpen.value;
+      if (!isMenuOpen.value) {
+        isMoreOpen.value = false;
+      }
+    };
+
+    const closeMenu = () => {
+      isMenuOpen.value = false;
+      isMoreOpen.value = false;
+    };
+
+    const toggleMore = () => {
+      isMoreOpen.value = !isMoreOpen.value;
+    };
+
+    const closeAllMenus = () => {
+      closeMenu();
+    };
+
     return {
-      isMenuOpen: false,
-      isMoreOpen: false,
+      isMenuOpen,
+      isMoreOpen,
+      toggleMenu,
+      closeMenu,
+      toggleMore,
+      closeAllMenus,
     };
   },
-  methods: {
-    toggleMenu() {
-      this.isMenuOpen = !this.isMenuOpen;
-      if (!this.isMenuOpen) {
-        this.isMoreOpen = false;
-      }
-    },
-    closeMenu() {
-      this.isMenuOpen = false;
-      this.isMoreOpen = false;
-    },
-    toggleMore() {
-      this.isMoreOpen = !this.isMoreOpen;
-    },
-    closeAllMenus() {
-      this.closeMenu();
-    },
-  },
-}
+});
 </script>
 
 <style scoped>

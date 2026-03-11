@@ -1,12 +1,6 @@
 <template>
-    <ActivityFeedPage></ActivityFeedPage>
+    <router-view />
 </template>
 <script>
-    import ActivityFeedPage from './views/ActivityFeedPage.vue';
-
-    export default {
-        components: {
-            ActivityFeedPage
-        }
-    };
+    
 </script>
