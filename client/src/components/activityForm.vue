@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useSessionStore } from '../stores/sessionStore'
+
 import type {
   Session,
   Feeling,
@@ -16,6 +17,7 @@ import type {
 } from '../types'
 
 const sessionStore = useSessionStore()
+const emit = defineEmits(['session-saved', 'cancelled'])
 
 type SessionForm = Omit<Session, 'id' | 'userId' | 'climbs'>
 
@@ -46,7 +48,7 @@ const outdoorGrades: OutdoorGrade[] = [
 
 const boulderGrades: BoulderGrade[] = [
   'V0', 'V1', 'V2', 'V3', 'V4', 'V5',
-  'V6', 'V7', 'V8', 'V9', 'V10', 'V11', 'V12',
+  'V6', 'V7', 'V8', 'V9', 'V10', 'V11', 'V12', 'V13', 'V14', 'V15', 'V16', 'V17'
 ]
 
 const indoorColors: IndoorColor[] = [
@@ -138,6 +140,7 @@ function removeClimb(index: number) {
 }
 
 function handleSubmit() {
+  
   const newSession: Session = {
     id: nextSessionId(),
     userId: 1,
@@ -160,6 +163,7 @@ function handleSubmit() {
   session.value = createSessionForm()
 
   climbs.value = []
+  emit('session-saved')
 }
 
 function isIndoorClimb(climb: LoggedClimb | undefined): climb is IndoorLoggedClimb {
@@ -174,7 +178,7 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit">
+  <form id="session-form" @submit.prevent="handleSubmit">
     <!-- Session Info -->
 
       <div class="field">
@@ -298,15 +302,14 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
         </div>
       </div>
 
-      <p v-if="climbs.length === 0" class="has-text-grey mt-3">
+      <p v-if="climbs.length === 0" class="help-text has-text-grey mt-3">
         No climbs added yet. Click <strong>+ Add Climb</strong> to log a route or problem.
       </p>
-
       <div
         v-for="(climb, i) in climbs"
         :key="climb.id"
         class="notification is-dark mt-3"
-      >
+       >
         <button type="button" class="delete" @click="removeClimb(i)"></button>
         <p class="has-text-weight-bold mb-2">Climb #{{ i + 1 }}</p>
 
@@ -314,11 +317,11 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
           <!-- Outdoor: route name / Indoor: color -->
           <div class="column is-half" v-if="isOutdoorClimb(climb)">
             <div class="field">
-              <label class="label is-small">Route Name</label>
+              <label class="label is-normal">Route Name</label>
               <div class="control">
                 <input
                   v-model="climb.name"
-                  class="input is-small"
+                  class="input is-normal"
                   type="text"
                   placeholder="e.g. Midnight Lightning"
                 />
@@ -327,9 +330,9 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
           </div>
           <div class="column is-half" v-else-if="isIndoorClimb(climb)">
             <div class="field">
-              <label class="label is-small">Hold Color</label>
+              <label class="label is-normal">Hold Color</label>
               <div class="control">
-                <div class="select is-small is-fullwidth">
+                <div class="select is-normal is-fullwidth">
                   <select v-model="climb.color">
                     <option value="" disabled>Pick a color</option>
                     <option v-for="c in indoorColors" :key="c" :value="c">{{ c }}</option>
@@ -342,14 +345,14 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
           <!-- Grade -->
           <div class="column is-half">
             <div class="field">
-              <label class="label is-small">
+              <label class="label is-normal">
                 Grade
                 <span class="has-text-grey-light is-size-7">
                   ({{ climb.style === 'Boulder' ? 'V-scale' : 'YDS' }})
                 </span>
               </label>
               <div class="control">
-                <div class="select is-small is-fullwidth">
+                <div class="select is-normal is-fullwidth">
                   <select v-model="climb.grade">
                     <option value="" disabled>Select grade</option>
                     <option v-for="g in gradesForClimb(climb)" :key="g" :value="g">{{ g }}</option>
@@ -362,9 +365,9 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
           <!-- Style -->
           <div class="column is-half">
             <div class="field">
-              <label class="label is-small">Style</label>
+              <label class="label is-normal">Style</label>
               <div class="control">
-                <div class="select is-small is-fullwidth">
+                <div class="select is-normal is-fullwidth">
                   <select v-model="climb.style" @change="onStyleChange(climb)">
                     <option v-for="s in climbStyles" :key="s" :value="s">{{ s }}</option>
                   </select>
@@ -376,9 +379,9 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
           <!-- Attempt -->
           <div class="column is-half">
             <div class="field">
-              <label class="label is-small">Attempt</label>
+              <label class="label is-normal">Attempt</label>
               <div class="control">
-                <div class="select is-small is-fullwidth">
+                <div class="select is-normal is-fullwidth">
                   <select v-model="climb.attempt">
                     <option v-for="a in attempts" :key="a" :value="a">{{ a }}</option>
                   </select>
@@ -390,7 +393,7 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
           <!-- Quality -->
           <div class="column is-half">
             <div class="field">
-              <label class="label is-small">Quality: {{ climb.quality }} / 10</label>
+              <label class="label is-normal">Quality: {{ climb.quality }} / 10</label>
               <div class="control">
                 <input
                   v-model.number="climb.quality"
@@ -398,7 +401,7 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
                   min="1"
                   max="10"
                   step="1"
-                  style="width: 100%"
+                  style="width: 210%"
                 />
               </div>
             </div>
@@ -407,11 +410,11 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
           <!-- Comment -->
           <div class="column is-full">
             <div class="field">
-              <label class="label is-small">Comment</label>
+              <label class="label is-normal">Comment</label>
               <div class="control">
                 <input
                   v-model="climb.comment"
-                  class="input is-small"
+                  class="input is-normal"
                   type="text"
                   placeholder="Beta notes, conditions, etc."
                 />
@@ -421,14 +424,11 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
         </div>
       </div>
 
-    <!-- Submit -->
-    <div class="field is-grouped">
-      <div class="control">
-        <button type="submit" class="button is-link">Save Session</button>
-      </div>
-      <div class="control">
-        <button type="button" class="button is-light">Cancel</button>
-      </div>
-    </div>
   </form>
 </template>
+
+<style scoped>
+.help-text {
+  margin-bottom: 25px;
+}
+</style>

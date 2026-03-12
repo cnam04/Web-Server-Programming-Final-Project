@@ -1,13 +1,20 @@
+
+// User Types
 export type UserId = number
-export type SessionId = number
-export type LoggedClimbId = number
 
 export type User = {
   id: UserId
   username: string
   email?: string
   friendIds: UserId[]
+  imageLink?: string
+  isAdmin: boolean
 }
+
+
+// Session Types
+export type SessionId = number
+export type LoggedClimbId = number
 
 export type SessionType = 'indoor' | 'outdoor'
 
@@ -76,6 +83,11 @@ export type BoulderGrade =
   | 'V10'
   | 'V11'
   | 'V12'
+  | 'V13'
+  | 'V14'
+  | 'V15'
+  | 'V16'
+  | 'V17'
 
 export type Grade = OutdoorGrade | BoulderGrade
 

@@ -4,14 +4,26 @@ import type { User, UserId } from '../types'
 import data from '../data/users.json'
 
 export const useUserStore = defineStore('users', () => {
-  const users = ref(data.users as User[])
+  const userData = data as { users: User[] }
+  const users = ref(userData.users)
 
   function getUserById(id: UserId): User | undefined {
     return users.value.find((user) => user.id === id)
   }
 
   function addUser(user: User) {
-    users.value.push(user)
+    return users.value.push(user)
+  }
+
+  function deleteUser(userId: UserId) {
+    users.value = users.value.filter((user) => user.id !== userId)
+  }
+
+  function editUser(userId: UserId, updatedUser: Partial<User>) {
+    const user = getUserById(userId)
+    if (!user) return
+
+    Object.assign(user, updatedUser)
   }
 
   function addFriend(userId: UserId, friendId: UserId) {
@@ -34,5 +46,6 @@ export const useUserStore = defineStore('users', () => {
     getUserById,
     addUser,
     addFriend,
+    deleteUser,
   }
 })
