@@ -49,3 +49,6 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+
+client/src/data/

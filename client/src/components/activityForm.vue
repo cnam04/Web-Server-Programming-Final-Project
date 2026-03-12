@@ -1,19 +1,41 @@
-<script setup>
-import { ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
+import { useSessionStore } from '../stores/sessionStore'
+import type {
+  Session,
+  Feeling,
+  LoggedClimb,
+  IndoorLoggedClimb,
+  OutdoorLoggedClimb,
+  ClimbStyle,
+  Attempt,
+  IndoorColor,
+  OutdoorGrade,
+  BoulderGrade,
+  Quality,
+} from '../types'
 
-const session = ref({
-  title: '',
-  date: new Date().toISOString().slice(0, 10),
-  location: '',
-  type: 'outdoor',
-  duration: '',
-  feeling: 3,
-  notes: '',
-})
+const sessionStore = useSessionStore()
 
-const climbs = ref([])
+type SessionForm = Omit<Session, 'id' | 'userId' | 'climbs'>
 
-const outdoorGrades = [
+function createSessionForm(): SessionForm {
+  return {
+    title: '',
+    date: new Date().toISOString().slice(0, 10),
+    location: '',
+    type: 'outdoor',
+    duration: '',
+    feeling: 3,
+    notes: '',
+  }
+}
+
+const session = ref<SessionForm>(createSessionForm())
+
+const climbs = ref<LoggedClimb[]>([])
+
+const outdoorGrades: OutdoorGrade[] = [
   '5.5', '5.6', '5.7', '5.8', '5.9',
   '5.10a', '5.10b', '5.10c', '5.10d',
   '5.11a', '5.11b', '5.11c', '5.11d',
@@ -22,66 +44,133 @@ const outdoorGrades = [
   '5.14a', '5.14b', '5.14c', '5.14d',
 ]
 
-const boulderGrades = [
+const boulderGrades: BoulderGrade[] = [
   'V0', 'V1', 'V2', 'V3', 'V4', 'V5',
   'V6', 'V7', 'V8', 'V9', 'V10', 'V11', 'V12',
 ]
 
-const indoorColors = [
+const indoorColors: IndoorColor[] = [
   'Red', 'Blue', 'Green', 'Yellow', 'Orange',
   'Purple', 'Pink', 'White', 'Black',
 ]
 
-const climbStyles = ['Rope', 'Boulder']
+const climbStyles: ClimbStyle[] = ['Rope', 'Boulder']
 
-const attempts = ['Flash', 'Onsight', 'Redpoint', 'Fell/Hung', 'Project']
+const attempts: Attempt[] = ['Flash', 'Onsight', 'Redpoint', 'Fell/Hung', 'Project']
 
 const isIndoor = computed(() => session.value.type === 'indoor')
 
-function gradesForClimb(climb) {
+function gradesForClimb(climb: LoggedClimb): Array<OutdoorGrade | BoulderGrade> {
   return climb.style === 'Boulder' ? boulderGrades : outdoorGrades
 }
 
-function onStyleChange(climb) {
+function onStyleChange(climb: LoggedClimb) {
   climb.grade = ''
 }
 
-function addClimb() {
-  if (isIndoor.value) {
-    climbs.value.push({
-      color: '',
-      grade: '',
-      style: 'Top Rope',
-      attempt: 'Redpoint',
-      quality: 5,
-      comment: '',
-    })
-  } else {
-    climbs.value.push({
-      name: '',
-      grade: '',
-      style: 'Lead',
-      attempt: 'Redpoint',
-      quality: 5,
-      comment: '',
-    })
+function createIndoorClimb(id: number, climb?: LoggedClimb): IndoorLoggedClimb {
+  return {
+    id,
+    color: isIndoorClimb(climb) ? climb.color : '',
+    grade: climb?.grade ?? '',
+    style: climb?.style ?? 'Rope',
+    attempt: climb?.attempt ?? 'Redpoint',
+    quality: clampQuality(climb?.quality ?? 5),
+    comment: climb?.comment ?? '',
   }
 }
 
-function removeClimb(index) {
+function createOutdoorClimb(id: number, climb?: LoggedClimb): OutdoorLoggedClimb {
+  return {
+    id,
+    name: isOutdoorClimb(climb) ? climb.name : '',
+    grade: climb?.grade ?? '',
+    style: climb?.style ?? 'Rope',
+    attempt: climb?.attempt ?? 'Redpoint',
+    quality: clampQuality(climb?.quality ?? 5),
+    comment: climb?.comment ?? '',
+  }
+}
+
+function clampFeeling(value: number): Feeling {
+  return Math.min(5, Math.max(1, Math.round(value))) as Feeling
+}
+
+function clampQuality(value: number): Quality {
+  return Math.min(10, Math.max(1, Math.round(value))) as Quality
+}
+
+function nextSessionId(): number {
+  const existingIds = sessionStore.sessions.map((existingSession) => existingSession.id)
+  return Math.max(0, ...existingIds) + 1
+}
+
+function nextClimbId(): number {
+  const sessionClimbIds = sessionStore.sessions.flatMap((existingSession) =>
+    existingSession.climbs.map((climb) => climb.id)
+  )
+  const draftClimbIds = climbs.value.map((climb) => climb.id)
+
+  return Math.max(0, ...sessionClimbIds, ...draftClimbIds) + 1
+}
+
+watch(
+  () => session.value.type,
+  (type) => {
+    climbs.value = climbs.value.map((climb) =>
+      type === 'indoor' ? createIndoorClimb(climb.id, climb) : createOutdoorClimb(climb.id, climb)
+    )
+  }
+)
+
+function addClimb() {
+  const newId = nextClimbId()
+
+  if (isIndoor.value) {
+    climbs.value.push(createIndoorClimb(newId))
+  } else {
+    climbs.value.push(createOutdoorClimb(newId))
+  }
+}
+
+function removeClimb(index: number) {
   climbs.value.splice(index, 1)
 }
 
 function handleSubmit() {
-  const payload = {
-    ...session.value,
-    climbs: climbs.value,
+  const newSession: Session = {
+    id: nextSessionId(),
+    userId: 1,
+    title: session.value.title,
+    date: session.value.date,
+    location: session.value.location,
+    type: session.value.type,
+    duration: session.value.duration,
+    feeling: clampFeeling(session.value.feeling),
+    notes: session.value.notes,
+    climbs: climbs.value.map((climb) => ({
+      ...climb,
+      quality: clampQuality(climb.quality),
+    })),
   }
-  console.log('Submitting session:', payload)
-  // TODO: send to API
+
+  sessionStore.addSession(newSession)
+  console.log('Saved session:', newSession)
+
+  session.value = createSessionForm()
+
+  climbs.value = []
 }
 
-const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great']
+function isIndoorClimb(climb: LoggedClimb | undefined): climb is IndoorLoggedClimb {
+  return climb !== undefined && 'color' in climb
+}
+
+function isOutdoorClimb(climb: LoggedClimb | undefined): climb is OutdoorLoggedClimb {
+  return climb !== undefined && 'name' in climb
+}
+
+const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
 </script>
 
 <template>
@@ -148,7 +237,7 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great']
                 <button
                   type="button"
                   class="button"
-                  :class="{ 'is-info is-selected': !isIndoor }"
+                  :class="{ 'is-link is-selected': !isIndoor }"
                   @click="session.type = 'outdoor'"
                 >
                   Outdoor
@@ -156,7 +245,7 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great']
                 <button
                   type="button"
                   class="button"
-                  :class="{ 'is-info is-selected': isIndoor }"
+                  :class="{ 'is-link is-selected': isIndoor }"
                   @click="session.type = 'indoor'"
                 >
                   Indoor
@@ -203,7 +292,7 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great']
           <h3 class="title is-5 mb-0">Climbs</h3>
         </div>
         <div class="level-right">
-          <button type="button" class="button is-success is-small" @click="addClimb">
+          <button type="button" class="button is-link is-small" @click="addClimb">
             + Add Climb
           </button>
         </div>
@@ -215,7 +304,7 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great']
 
       <div
         v-for="(climb, i) in climbs"
-        :key="i"
+        :key="climb.id"
         class="notification is-dark mt-3"
       >
         <button type="button" class="delete" @click="removeClimb(i)"></button>
@@ -223,7 +312,7 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great']
 
         <div class="columns is-multiline">
           <!-- Outdoor: route name / Indoor: color -->
-          <div class="column is-half" v-if="!isIndoor">
+          <div class="column is-half" v-if="isOutdoorClimb(climb)">
             <div class="field">
               <label class="label is-small">Route Name</label>
               <div class="control">
@@ -236,7 +325,7 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great']
               </div>
             </div>
           </div>
-          <div class="column is-half" v-else>
+          <div class="column is-half" v-else-if="isIndoorClimb(climb)">
             <div class="field">
               <label class="label is-small">Hold Color</label>
               <div class="control">
