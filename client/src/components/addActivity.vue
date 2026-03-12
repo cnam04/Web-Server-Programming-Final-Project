@@ -13,7 +13,7 @@ function closeModal() {
 }
 </script>
 <template>
-    <button class="js-modal-trigger" data-target="modal-js-example" @click="openModal">
+    <button class="js-modal-trigger button is-link" data-target="modal-js-example" @click="openModal">
             Add a session
     </button>
     
