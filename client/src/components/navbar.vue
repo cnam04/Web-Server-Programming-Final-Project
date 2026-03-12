@@ -5,7 +5,7 @@
   <div id="navbarBasicExample" class="navbar-menu" :class="{ 'is-active': isMenuOpen }">
     <div class="navbar-start">
       <RouterLink to="/"class="navbar-item" @click="closeMenu">
-        My Activities
+        My sessions
       </RouterLink>
 
       
@@ -16,7 +16,7 @@
 
         <div class="navbar-dropdown">
           <RouterLink to="/friend-activity" class="navbar-item" @click="closeMenu">
-            Friend Activity
+            Friend Sessions
           </RouterLink>
         
           <RouterLink to="/add-friends" class="navbar-item" @click="closeMenu">

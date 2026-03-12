@@ -6,9 +6,6 @@ const routes = [
   { path: '/', 
     component: () => ActivityFeedPage
   },
-  { path: '/add-activity', 
-    component: () => import('../views/AddActivityPage.vue')
-  },
   { path: '/friend-activity', 
     component: () => import('../views/FriendActivityPage.vue') 
   },

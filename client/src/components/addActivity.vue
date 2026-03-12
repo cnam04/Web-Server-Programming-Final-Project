@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import activityForm from './activityForm.vue';
 
 const isModalOpen = ref(false);
 
@@ -13,7 +14,7 @@ function closeModal() {
 </script>
 <template>
     <button class="js-modal-trigger" data-target="modal-js-example" @click="openModal">
-            Add an activity
+            Add a session
     </button>
     
     <div class="modal" :class="{ 'is-active' : isModalOpen}">
@@ -24,15 +25,9 @@ function closeModal() {
       <button class="delete" aria-label="close" @click="closeModal"></button>
     </header>
     <section class="modal-card-body">
-      <!-- Content ... -->
-       <h1 class="title">Add an activity</h1>
+      <activityForm></activityForm>
     </section>
-    <footer class="modal-card-foot">
-      <div class="buttons">
-        <button class="button is-success">Save changes</button>
-        <button class="button" @click="closeModal">Cancel</button>
-      </div>
-    </footer>
+
   </div>
 </div>
 </template>
