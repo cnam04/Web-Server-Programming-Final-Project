@@ -47,5 +47,6 @@ export const useUserStore = defineStore('users', () => {
     addUser,
     addFriend,
     deleteUser,
+    editUser
   }
 })
