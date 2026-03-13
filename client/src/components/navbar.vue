@@ -1,3 +1,34 @@
+<script setup lang="ts">
+import { defineComponent, ref } from 'vue';
+import addActivity from './addActivity.vue';
+import { useAuthStore } from '@/stores/authStore';
+
+const authStore = useAuthStore();
+const isAdmin = authStore.isAdmin;
+
+const isMenuOpen = ref(false);
+const isMoreOpen = ref(false);
+const toggleMenu = () => { 
+  isMenuOpen.value = !isMenuOpen.value;
+  if (!isMenuOpen.value) {
+    isMoreOpen.value = false;
+  }
+};
+
+const closeMenu = () => {
+  isMenuOpen.value = false;
+  isMoreOpen.value = false;
+};
+
+const toggleMore = () => {
+  isMoreOpen.value = !isMoreOpen.value;
+};
+
+const closeAllMenus = () => {
+  closeMenu();
+};
+
+</script>
 <template>
 
 
@@ -24,7 +55,7 @@
           </RouterLink>
         </div>
       </div>
-      <div class="navbar-item has-dropdown is-hoverable" :class="{ 'is-active': isMoreOpen }">
+      <div v-if="isAdmin" class="navbar-item has-dropdown is-hoverable" :class="{ 'is-active': isMoreOpen }">
         <a class="navbar-link">
           Admin
         </a>
@@ -52,52 +83,7 @@
 
 
 </template>
-<script>
-import { defineComponent, ref } from 'vue';
-import addActivity from './addActivity.vue';
 
-export default defineComponent({
-  components: {
-    addActivity
-  },
-  name: 'Navbar',
-  setup() {
-    const isMenuOpen = ref(false);
-    const isMoreOpen = ref(false);
-
-
-
-    const toggleMenu = () => { d
-      isMenuOpen.value = !isMenuOpen.value;
-      if (!isMenuOpen.value) {
-        isMoreOpen.value = false;
-      }
-    };
-
-    const closeMenu = () => {
-      isMenuOpen.value = false;
-      isMoreOpen.value = false;
-    };
-
-    const toggleMore = () => {
-      isMoreOpen.value = !isMoreOpen.value;
-    };
-
-    const closeAllMenus = () => {
-      closeMenu();
-    };
-
-    return {
-      isMenuOpen,
-      isMoreOpen,
-      toggleMenu,
-      closeMenu,
-      toggleMore,
-      closeAllMenus,
-    };
-  },
-});
-</script>
 
 <style scoped>
 .brand-logo {

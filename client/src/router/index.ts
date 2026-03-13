@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/stores/authStore'
 import ActivityFeedPage from '../views/ActivityFeedPage.vue'
 import LoginPage from '../views/LoginPage.vue'
 
@@ -28,5 +29,14 @@ const router = createRouter({
   routes,
 })
 
+
+// make it so you cant just type /admin into the url if not signed in
+router.beforeEach((to) => {
+  const authStore = useAuthStore()
+
+  if (to.path === '/admin' && !authStore.isAdmin) {
+    return '/login'
+  }
+})
 
 export default router
