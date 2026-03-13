@@ -1,10 +1,14 @@
 import ActivityFeedPage from '../views/ActivityFeedPage.vue'
+import LoginPage from '../views/LoginPage.vue'
 
 import { createWebHistory, createRouter } from 'vue-router'
 
 const routes = [
   { path: '/', 
-    component: () => ActivityFeedPage
+    component: ActivityFeedPage
+  },
+  { path: '/login',
+    component: LoginPage
   },
   { path: '/friend-activity', 
     component: () => import('../views/FriendActivityPage.vue') 
