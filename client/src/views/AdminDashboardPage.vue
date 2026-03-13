@@ -28,12 +28,16 @@ function handleSessionSaved() {
   	isModalOpen.value = false
 }
 
-function openEditUserModal() {
-	isModalOpen.value = true;
+const selectedUser = ref<User | null>(null)
+
+function openEditUserModal(user: User) {
+  selectedUser.value = user
+  isModalOpen.value = true
 }
 
 function closeEditUserModal() {
-	isModalOpen.value = false;
+  isModalOpen.value = false
+  selectedUser.value = null
 }
 
 
@@ -70,40 +74,44 @@ function closeEditUserModal() {
 						</th>
 					</tr>
 				</thead>
-					<tbody>
-					
+				<tbody>
 					<tr v-for="user in users.users" :key="user.id">
 						<td><img :src="user.imageLink" alt="User Image" class="image is-32x32" /></td>
 						<td>{{ user.id }}</td>
 						<td>{{ user.username }}</td>
 						<td>{{ user.email }}</td>
 						<td>{{ findFriendsByIds(user.friendIds).map((friend) => friend.username).join(', ') }}</td>
-						<td><button class="button is-normal is-rounded is-danger" @click="deleteUser(user.id)">
-								<i class="fas fa-trash"></i>
+						<td>
+							<button class="button is-normal is-rounded is-danger" @click="deleteUser(user.id)">
+							<i class="fas fa-trash"></i>
 							</button>
-							<button class="button is-normal is-rounded is-warning" @click="openEditUserModal">
-								<i class="fas fa-edit"></i>
+
+							<button class="button is-normal is-rounded is-warning" @click="openEditUserModal(user)">
+							<i class="fas fa-edit"></i>
 							</button>
-							<modal :isActive="isModalOpen"
-							title="Edit User"
-							confirmText="Save User"
-							confirmFormId="edit-user-form"
-							@close="closeEditUserModal">
-								<editUserForm 
-								:currentEmail="user.email" 
-								:currentUsername="user.username" 
-								:currentIsAdmin="user.isAdmin" 
-								:currentImageLink="user.imageLink" 
-								:currentFriendIds="user.friendIds" 
-								:currentId="user.id" 
-								@user-edited="handleSessionSaved">
-								</editUserForm>
-							</modal>
 						</td>
 					</tr>
 					
 				</tbody>
 				</table>
+				<modal
+					:isActive="isModalOpen"
+					title="Edit User"
+					confirmText="Save User"
+					confirmFormId="edit-user-form"
+					@close="closeEditUserModal"
+					>
+					<editUserForm
+						v-if="selectedUser"
+						:currentEmail="selectedUser.email"
+						:currentUsername="selectedUser.username"
+						:currentIsAdmin="selectedUser.isAdmin"
+						:currentImageLink="selectedUser.imageLink"
+						:currentFriendIds="selectedUser.friendIds"
+						:currentId="selectedUser.id"
+						@user-edited="handleSessionSaved"
+					/>
+				</modal>
 		</div>
 	</section>
 </template>
