@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Session, SessionId, UserId, LoggedClimb, LoggedClimbId } from '../types'
 import data from '../data/sessions.json'
+import { useUserStore } from './userStore'
 
 type SessionStoreData = {
   sessions: Session[]
@@ -10,6 +11,7 @@ type SessionStoreData = {
 export const useSessionStore = defineStore('sessions', () => {
   const sessionData = data as SessionStoreData
   const sessions = ref(sessionData.sessions)
+  const userStore = useUserStore()
 
   function getSessionById(id: SessionId): Session | undefined {
     return sessions.value.find((session) => session.id === id)
@@ -17,6 +19,14 @@ export const useSessionStore = defineStore('sessions', () => {
 
   function getSessionsByUserId(userId: UserId): Session[] {
     return sessions.value.filter((session) => session.userId === userId)
+  }
+
+  function getUsernameBySessionId(sessionId: SessionId): string {
+    const session = getSessionById(sessionId)
+    if (!session) return 'Unknown user'
+
+    const user = userStore.getUserById(session.userId)
+    return user?.username ?? 'Unknown user'
   }
 
   function addSession(session: Session) {
@@ -65,6 +75,7 @@ export const useSessionStore = defineStore('sessions', () => {
     sessions,
     getSessionById,
     getSessionsByUserId,
+    getUsernameBySessionId,
     addSession,
     removeSession,
     addClimbToSession,

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { Session } from '../types'
 import ClimbCard from './climbCard.vue'
+import { useSessionStore } from '../stores/sessionStore'
+
+const sessionStore = useSessionStore()
 
 defineProps<{
   session: Session
@@ -43,7 +46,7 @@ function feelingLabel(feeling: number): string {
       <p><strong>Date:</strong> {{ session.date }}</p>
       <p><strong>Duration:</strong> {{ formatDuration(session.duration) }}</p>
       <p><strong>Feeling:</strong> {{ feelingLabel(session.feeling) }}</p>
-      <p><strong>User ID:</strong> {{ session.userId }}</p>
+      <p><strong>Climber:</strong> {{ sessionStore.getUsernameBySessionId(session.id) }}</p>
       <p><strong>Notes:</strong> {{ session.notes || 'No notes recorded.' }}</p>
       <p><strong>Total climbs:</strong> {{ session.climbs.length }}</p>
     </div>

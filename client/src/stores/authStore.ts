@@ -7,6 +7,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAdmin = computed(() => currentUser.value?.isAdmin === true)
 
+  const id = computed(() => currentUser.value?.id)
+  const username = computed(() => currentUser.value?.username)
+
   function login(user: User) {
     currentUser.value = user
   }
@@ -15,5 +18,5 @@ export const useAuthStore = defineStore('auth', () => {
     currentUser.value = null
   }
 
-  return { currentUser, isAdmin, login, logout }
+  return { currentUser, isAdmin, username, login, logout, id }
 })

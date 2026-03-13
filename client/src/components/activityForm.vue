@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useSessionStore } from '../stores/sessionStore'
+import { useAuthStore } from '../stores/authStore'
 
 import type {
   Session,
@@ -17,6 +18,7 @@ import type {
 } from '../types'
 
 const sessionStore = useSessionStore()
+const authStore = useAuthStore()
 const emit = defineEmits(['session-saved', 'cancelled'])
 
 type SessionForm = Omit<Session, 'id' | 'userId' | 'climbs'>
@@ -140,10 +142,14 @@ function removeClimb(index: number) {
 }
 
 function handleSubmit() {
+  if (authStore.id === undefined) {
+    console.warn('No logged in user found. Unable to save session.')
+    return
+  }
   
   const newSession: Session = {
     id: nextSessionId(),
-    userId: 1,
+    userId: authStore.id,
     title: session.value.title,
     date: session.value.date,
     location: session.value.location,

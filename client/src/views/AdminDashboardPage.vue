@@ -15,28 +15,33 @@ function deleteUser(userId: UserId) {
   users.deleteUser(userId);
 }
 
-const isModalOpen = ref(false);
+const isAddModalOpen = ref(false);
+const isEditModalOpen = ref(false);
 
 function openAddUserModal() {
-    isModalOpen.value = true;
+    isAddModalOpen.value = true;
 }
 
 function closeAddUserModal() {
-    isModalOpen.value = false;
+    isAddModalOpen.value = false;
 }
-function handleSessionSaved() {
-  	isModalOpen.value = false
+function handleAddSessionSaved() {
+  	isAddModalOpen.value = false
+}
+
+function handleEditSessionSaved() {
+  	isEditModalOpen.value = false
 }
 
 const selectedUser = ref<User | null>(null)
 
 function openEditUserModal(user: User) {
   selectedUser.value = user
-  isModalOpen.value = true
+  isEditModalOpen.value = true
 }
 
 function closeEditUserModal() {
-  isModalOpen.value = false
+  isEditModalOpen.value = false
   selectedUser.value = null
 }
 
@@ -64,12 +69,12 @@ function closeEditUserModal() {
 								<i class="fas fa-edit"></i>
 								<span>Add User</span>
 							</button>
-							<modal :isActive="isModalOpen"
+							<modal :isActive="isAddModalOpen"
 							title="Add a User"
 							confirmText="Save User"
 							confirmFormId="add-user-form"
 							@close="closeAddUserModal">
-							<addUserForm @user-added="handleSessionSaved"></addUserForm>
+							<addUserForm @user-added="handleAddSessionSaved"></addUserForm>
 							</modal>
 						</th>
 					</tr>
@@ -95,7 +100,7 @@ function closeEditUserModal() {
 				</tbody>
 				</table>
 				<modal
-					:isActive="isModalOpen"
+					:isActive="isEditModalOpen"
 					title="Edit User"
 					confirmText="Save User"
 					confirmFormId="edit-user-form"
@@ -109,7 +114,7 @@ function closeEditUserModal() {
 						:currentImageLink="selectedUser.imageLink"
 						:currentFriendIds="selectedUser.friendIds"
 						:currentId="selectedUser.id"
-						@user-edited="handleSessionSaved"
+						@user-edited="handleEditSessionSaved"
 					/>
 				</modal>
 		</div>
