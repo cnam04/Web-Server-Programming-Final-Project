@@ -18,9 +18,13 @@ const currentUser = computed(() =>
 const friendSessions = computed(() => {
   if (!currentUser.value) return []
 
-  return sessionStore.sessions.filter((session) =>
+  const sessions = sessionStore.sessions.filter((session) =>
     currentUser.value!.friendIds.includes(session.userId)
   )
+
+  sessions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+  return sessions
 })
 
 </script>
@@ -37,15 +41,41 @@ const friendSessions = computed(() => {
         No friend sessions have been logged yet.
       </div>
 
-      <div v-else class="columns is-multiline">
-        <div
-          v-for="session in friendSessions"
-          :key="session.id"
-          class="column is-12 is-6-desktop"
-        >
-          <SessionCard :session="session" />
+      <div v-else class="sessions-scroll-wrapper">
+        <div class="columns is-multiline is-centered">
+          <div
+            v-for="session in friendSessions"
+            :key="session.date"
+            class="column is-12 is-8-desktop is-7-widescreen"
+          >
+          <div class="session-card-shell">
+            <SessionCard :session="session" />
+          </div>
+            
+          </div>
         </div>
       </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+
+
+.sessions-scroll-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.5rem;
+}
+
+.session-card-shell {
+  position: relative;
+}
+
+.container {
+  height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+}
+</style>

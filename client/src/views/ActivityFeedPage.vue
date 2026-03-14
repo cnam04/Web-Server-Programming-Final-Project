@@ -13,7 +13,7 @@ const currentId = computed(() => authStore.id)
 const currentUsername = computed(() => authStore.username)
 const mySessions = computed(() => {
   if (currentId.value === undefined) return []
-  return sessionStore.getSessionsByUserId(currentId.value)
+  return sessionStore.getSessionsByUserId(currentId.value).reverse()
 })
 
 function deleteSession(sessionId: number) {
@@ -39,7 +39,7 @@ function deleteSession(sessionId: number) {
         <div class="columns is-multiline is-centered">
           <div
             v-for="session in mySessions"
-            :key="session.id"
+            :key="session.date"
             class="column is-12 is-8-desktop is-7-widescreen"
           >
             <div class="session-card-shell">
