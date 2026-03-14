@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import ActivityForm from './activityForm.vue';
 import modal from './modal.vue';
+import { showToast } from '../utils/toast';
 
 const isModalOpen = ref(false);
 
@@ -13,7 +14,8 @@ function closeModal() {
     isModalOpen.value = false;
 }
 function handleSessionSaved() {
-  isModalOpen.value = false
+    showToast('Session added successfully!', 'is-success')
+    isModalOpen.value = false
 }
 </script>
 <template>

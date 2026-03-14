@@ -9,6 +9,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { ref } from 'vue';
 import { Session } from '@/types';
 import Modal from '../components/modal.vue';
+import { showToast } from '@/utils/toast';
 
 const sessionStore = useSessionStore()
 const authStore = useAuthStore()
@@ -22,6 +23,7 @@ const mySessions = computed(() => {
 
 function deleteSession(sessionId: number) {
   sessionStore.removeSession(sessionId)
+  showToast('Session deleted successfully!', 'is-success')
 }
 
 const isEditModalOpen = ref(false)
@@ -35,6 +37,7 @@ function openEditModal(session: Session) {
 function closeEditModal() {
   isEditModalOpen.value = false
   editingSession.value = null
+  showToast('Session edited successfully!', 'is-success')
 }
 
 </script>

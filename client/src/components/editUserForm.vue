@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import { ref } from 'vue';
     import { useUserStore } from '@/stores/userStore';
+    import { showToast } from '@/utils/toast';
 
     import type {
         User
@@ -31,6 +32,7 @@
 
     function handleSubmit() {
         userStore.editUser(currentUser.value.id, currentUser.value)
+        showToast('User edited successfully!', 'is-success')
         emit('user-edited')
     }
 

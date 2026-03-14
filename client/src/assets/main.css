@@ -1,2 +1,25 @@
 @import "https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css";
 @import "@fortawesome/fontawesome-free/css/all.min.css";
+
+
+/* Custom Styles for the toast */
+.big-success-toast {
+  min-width: 380px;
+  max-width: 460px;
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.4;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+  border: none;
+  background: #23d160;
+}
+
+.big-success-toast.notification {
+  margin: 1rem;
+}
+
+.big-success-toast .delete {
+  transform: scale(1.15);
+}
