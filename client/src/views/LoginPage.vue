@@ -18,7 +18,7 @@ function handleLogin(){
     if (authStore.isAdmin){
         router.push('/admin')
     }else{
-        router.push('/')
+        router.push('/activity-feed')
     }
 }
 

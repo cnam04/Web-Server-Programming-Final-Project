@@ -5,10 +5,10 @@ import LoginPage from '../views/LoginPage.vue'
 import { createWebHistory, createRouter } from 'vue-router'
 
 const routes = [
-  { path: '/', 
+  { path: '/activity-feed', 
     component: ActivityFeedPage
   },
-  { path: '/login',
+  { path: '/',
     component: LoginPage
   },
   { path: '/friend-activity', 
@@ -35,7 +35,7 @@ router.beforeEach((to) => {
   const authStore = useAuthStore()
 
   if (to.path === '/admin' && !authStore.isAdmin) {
-    return '/login'
+    return '/'
   }
 })
 

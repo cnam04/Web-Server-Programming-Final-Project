@@ -31,9 +31,10 @@ function handleAddSessionSaved() {
 
 function handleEditSessionSaved() {
   	isEditModalOpen.value = false
+	selectedUser.value = null
 }
 
-const selectedUser = ref<User | null>(null)
+let selectedUser = ref<User | null>(null)
 
 function openEditUserModal(user: User) {
   selectedUser.value = user
@@ -51,7 +52,7 @@ function closeEditUserModal() {
 	<Navbar></Navbar>
 	<section class="section">
 		<section class="section">
-			<div class="container">
+			<div class="container has-text-centered">
 				<h1 class="title is-1">Admin Dashboard</h1>
 				<p class="content">Add, remove, and edit users here.</p>
 			</div>

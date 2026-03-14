@@ -25,7 +25,7 @@
         id: props.currentId,
         username: props.currentUsername,
         email: props.currentEmail,
-        friendIds: [],
+        friendIds: props.currentFriendIds,
         imageLink: props.currentImageLink,
         isAdmin: props.currentIsAdmin,
     })

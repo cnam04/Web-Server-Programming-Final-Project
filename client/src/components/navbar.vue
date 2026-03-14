@@ -46,11 +46,13 @@ const closeAllMenus = () => {
 <nav class="navbar" role="navigation" aria-label="main navigation">
   <div id="navbarBasicExample" class="navbar-menu" :class="{ 'is-active': isMenuOpen }">
     <div class="navbar-start">
-      <RouterLink to="/"class="navbar-item" @click="closeMenu">
+      <RouterLink to="/activity-feed" class="navbar-item" @click="closeMenu">
         My sessions
       </RouterLink>
 
-      
+      <button class="navbar-item" @click="toggleStatisticsSidebar">
+        Statistics
+      </button>
       <div class="navbar-item has-dropdown is-hoverable" :class="{ 'is-active': isMoreOpen }">
         <a class="navbar-link">
           Social
@@ -66,9 +68,7 @@ const closeAllMenus = () => {
           </button>
         </div>
       </div>
-      <button class="navbar-item" @click="toggleStatisticsSidebar">
-        Statistics
-      </button>
+      
       <div v-if="isAdmin" class="navbar-item has-dropdown is-hoverable" :class="{ 'is-active': isMoreOpen }">
         <a class="navbar-link">
           Admin
@@ -85,7 +85,7 @@ const closeAllMenus = () => {
       <div class="navbar-item">
         <div class="buttons">
           <addActivity> </addActivity>
-          <RouterLink to="/login" class="button is-light" @click="closeMenu">
+          <RouterLink to="/" class="button is-light" @click="closeMenu">
             Log in
           </RouterLink>
         </div>
