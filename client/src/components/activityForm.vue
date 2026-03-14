@@ -19,7 +19,14 @@ import type {
 
 const sessionStore = useSessionStore()
 const authStore = useAuthStore()
-const emit = defineEmits(['session-saved', 'cancelled'])
+const props = defineProps<{
+  mode: 'create' | 'edit'
+  session?: Session
+}>()
+
+const emit = defineEmits<{
+  (e: 'session-saved'): void
+}>()
 
 type SessionForm = Omit<Session, 'id' | 'userId' | 'climbs'>
 
@@ -38,6 +45,8 @@ function createSessionForm(): SessionForm {
 const session = ref<SessionForm>(createSessionForm())
 
 const climbs = ref<LoggedClimb[]>([])
+
+const formId = computed(() => (props.mode === 'edit' ? 'edit-session-form' : 'session-form'))
 
 const outdoorGrades: OutdoorGrade[] = [
   '5.5', '5.6', '5.7', '5.8', '5.9',
@@ -141,12 +150,78 @@ function removeClimb(index: number) {
   climbs.value.splice(index, 1)
 }
 
+function hydrateFromSession(sourceSession: Session) {
+  session.value = {
+    title: sourceSession.title,
+    date: sourceSession.date,
+    location: sourceSession.location,
+    type: sourceSession.type,
+    duration: sourceSession.duration,
+    feeling: sourceSession.feeling,
+    notes: sourceSession.notes,
+  }
+
+  climbs.value = sourceSession.climbs.map((climb) =>
+    sourceSession.type === 'indoor'
+      ? createIndoorClimb(climb.id, climb)
+      : createOutdoorClimb(climb.id, climb)
+  )
+}
+
+function initializeForm() {
+  if (props.mode === 'edit' && props.session) {
+    hydrateFromSession(props.session)
+    return
+  }
+
+  session.value = createSessionForm()
+  climbs.value = []
+}
+
+watch(
+  () => [props.mode, props.session],
+  () => {
+    initializeForm()
+  },
+  { immediate: true }
+)
+
 function handleSubmit() {
+  const formattedClimbs = climbs.value.map((climb) => ({
+    ...climb,
+    quality: clampQuality(climb.quality),
+  }))
+
+  if (props.mode === 'edit') {
+    if (!props.session) {
+      console.warn('No session provided in edit mode. Unable to save changes.')
+      return
+    }
+
+    const updatedSession: Session = {
+      id: props.session.id,
+      userId: props.session.userId,
+      title: session.value.title,
+      date: session.value.date,
+      location: session.value.location,
+      type: session.value.type,
+      duration: session.value.duration,
+      feeling: clampFeeling(session.value.feeling),
+      notes: session.value.notes,
+      climbs: formattedClimbs,
+    }
+
+    sessionStore.updateSession(updatedSession)
+    console.log('Updated session:', updatedSession)
+    emit('session-saved')
+    return
+  }
+
   if (authStore.id === undefined) {
     console.warn('No logged in user found. Unable to save session.')
     return
   }
-  
+
   const newSession: Session = {
     id: nextSessionId(),
     userId: authStore.id,
@@ -157,18 +232,13 @@ function handleSubmit() {
     duration: session.value.duration,
     feeling: clampFeeling(session.value.feeling),
     notes: session.value.notes,
-    climbs: climbs.value.map((climb) => ({
-      ...climb,
-      quality: clampQuality(climb.quality),
-    })),
+    climbs: formattedClimbs,
   }
 
   sessionStore.addSession(newSession)
   console.log('Saved session:', newSession)
 
-  session.value = createSessionForm()
-
-  climbs.value = []
+  initializeForm()
   emit('session-saved')
 }
 
@@ -184,7 +254,7 @@ const feelingLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Great'] as const
 </script>
 
 <template>
-  <form id="session-form" @submit.prevent="handleSubmit">
+  <form :id="formId" @submit.prevent="handleSubmit">
     <!-- Session Info -->
 
       <div class="field">

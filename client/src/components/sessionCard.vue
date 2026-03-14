@@ -2,11 +2,17 @@
 import type { Session } from '../types'
 import ClimbCard from './climbCard.vue'
 import { useSessionStore } from '../stores/sessionStore'
+import { useAuthStore } from '@/stores/authStore';
+import { computed } from 'vue'
 
 const sessionStore = useSessionStore()
-
-defineProps<{
+const authStore = useAuthStore()
+const props = defineProps<{
   session: Session
+}>()
+
+const emit = defineEmits<{
+  edit: [session: Session]
 }>()
 
 function formatDuration(duration: number | ''): string {
@@ -25,6 +31,15 @@ function feelingLabel(feeling: number): string {
 
   return labels[feeling] ?? String(feeling)
 }
+
+
+const canEdit = computed(() => {
+  return authStore.id === props.session.userId
+})
+
+function handleEditClick() {
+  emit('edit', props.session)
+}
 </script>
 
 <template>
@@ -38,6 +53,13 @@ function feelingLabel(feeling: number): string {
       </div>
 
       <div class="level-right">
+            <button
+            v-if="canEdit"
+            class="button is-small is-warning"
+            @click="handleEditClick"
+          >
+            Edit
+        </button>
         <span class="tag is-primary is-medium">{{ session.type }}</span>
       </div>
     </div>

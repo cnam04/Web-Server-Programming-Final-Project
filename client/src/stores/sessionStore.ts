@@ -51,6 +51,13 @@ export const useSessionStore = defineStore('sessions', () => {
     session.climbs = session.climbs.filter((climb) => climb.id !== climbId)
   }
 
+  function updateSession(updatedSession: Session) {
+    const index = sessions.value.findIndex((session) => session.id === updatedSession.id)
+    if (index === -1) return
+
+    sessions.value[index] = updatedSession
+  }
+
   function updateClimbInSession(sessionId: SessionId, updatedClimb: LoggedClimb) {
     const session = getSessionById(sessionId)
     if (!session) return
@@ -82,5 +89,6 @@ export const useSessionStore = defineStore('sessions', () => {
     removeClimbFromSession,
     updateClimbInSession,
     getClimbFromSession,
+    updateSession
   }
 })

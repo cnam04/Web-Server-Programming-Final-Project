@@ -3,8 +3,12 @@
 import { computed } from 'vue'
 import navbar from '../components/navbar.vue';
 import SessionCard from '../components/sessionCard.vue'
+import ActivityForm from '../components/activityForm.vue'
 import { useSessionStore } from '../stores/sessionStore'
 import { useAuthStore } from '@/stores/authStore';
+import { ref } from 'vue';
+import { Session } from '@/types';
+import Modal from '../components/modal.vue';
 
 const sessionStore = useSessionStore()
 const authStore = useAuthStore()
@@ -19,12 +23,32 @@ const mySessions = computed(() => {
 function deleteSession(sessionId: number) {
   sessionStore.removeSession(sessionId)
 }
+
+const isEditModalOpen = ref(false)
+const editingSession = ref<Session | null>(null)
+
+function openEditModal(session: Session) {
+  editingSession.value = session
+  isEditModalOpen.value = true
+}
+
+function closeEditModal() {
+  isEditModalOpen.value = false
+  editingSession.value = null
+}
+
 </script>
 
 
 <template>
   <navbar></navbar>
-
+  <modal :isActive="isEditModalOpen"
+  title="Edit Session"
+  confirmText="Save Changes"
+  confirmFormId="edit-session-form"
+  @close="closeEditModal">
+  <ActivityForm mode="edit" :session="editingSession ?? undefined" @session-saved="closeEditModal"/>
+  </modal>
   <section class="section my-activity-page">
     <div class="container activity-container">
       <div class="has-text-centered mb-5">
@@ -49,7 +73,9 @@ function deleteSession(sessionId: number) {
                 aria-label="Delete session"
               ></button>
 
-              <SessionCard :session="session" />
+              <SessionCard :session="session" 
+              @edit="openEditModal"
+              />
             </div>
           </div>
         </div>

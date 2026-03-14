@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import activityForm from './activityForm.vue';
+import ActivityForm from './activityForm.vue';
 import modal from './modal.vue';
 
 const isModalOpen = ref(false);
@@ -25,6 +25,6 @@ function handleSessionSaved() {
     confirmText="Save Session"
     confirmFormId="session-form"
     @close="closeModal">
-        <activityForm @session-saved="handleSessionSaved"></activityForm>
+        <ActivityForm mode="create" @session-saved="handleSessionSaved"></ActivityForm>
     </modal>
 </template>
