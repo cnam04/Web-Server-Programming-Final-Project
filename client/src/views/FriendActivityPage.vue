@@ -34,8 +34,10 @@ const friendSessions = computed(() => {
 
   <section class="section">
     <div class="container">
-      <h1 class="title">Friend Activity</h1>
-      <p class="content">Browse recorded climbing sessions and the climbs in each one.</p>
+      <div class="has-text-centered mb-5">
+        <h1 class="title">Friend Activity</h1>
+        <p class="content">Browse recorded climbing sessions and the climbs in each one.</p>
+      </div>
 
       <div v-if="friendSessions.length === 0" class="notification">
         No friend sessions have been logged yet.
