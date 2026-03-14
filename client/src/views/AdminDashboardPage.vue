@@ -53,7 +53,7 @@ function closeEditUserModal() {
 		<section class="section">
 			<div class="container">
 				<h1 class="title is-1">Admin Dashboard</h1>
-				<p class="content">Add, remove, and edit users here.w</p>
+				<p class="content">Add, remove, and edit users here.</p>
 			</div>
 		</section>
 		<div class="container is-fluid">

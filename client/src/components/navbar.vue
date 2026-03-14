@@ -2,9 +2,15 @@
 import { defineComponent, ref } from 'vue';
 import addActivity from './addActivity.vue';
 import { useAuthStore } from '@/stores/authStore';
+import AddFriendsSidebar from './addFriendsSidebar.vue';
 
 const authStore = useAuthStore();
 const isAdmin = authStore.isAdmin;
+
+const isAddFriendsSidebarOpen = ref(false);
+function toggleAddFriendsSidebar() {
+  isAddFriendsSidebarOpen.value = !isAddFriendsSidebarOpen.value;
+}
 
 const isMenuOpen = ref(false);
 const isMoreOpen = ref(false);
@@ -31,7 +37,6 @@ const closeAllMenus = () => {
 </script>
 <template>
 
-
 <nav class="navbar" role="navigation" aria-label="main navigation">
   <div id="navbarBasicExample" class="navbar-menu" :class="{ 'is-active': isMenuOpen }">
     <div class="navbar-start">
@@ -50,9 +55,9 @@ const closeAllMenus = () => {
             Friend Sessions
           </RouterLink>
         
-          <RouterLink to="/add-friends" class="navbar-item" @click="closeMenu">
+          <button class="navbar-item" @click="toggleAddFriendsSidebar">
             Add friends
-          </RouterLink>
+          </button>
         </div>
       </div>
       <div v-if="isAdmin" class="navbar-item has-dropdown is-hoverable" :class="{ 'is-active': isMoreOpen }">
@@ -80,7 +85,7 @@ const closeAllMenus = () => {
   </div>
 </nav>
 
-
+<AddFriendsSidebar :width="300" :isActive="isAddFriendsSidebarOpen" @close="isAddFriendsSidebarOpen = false" />
 
 </template>
 
