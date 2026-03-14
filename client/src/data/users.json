@@ -1,0 +1,44 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "cole",
+      "email": "cole@example.com",
+      "friendIds": [2, 3],
+      "imageLink": "https://cdn.dummyjson.com/product-images/fragrances/calvin-klein-ck-one/1.webp",
+      "isAdmin": true
+    },
+    {
+      "id": 2,
+      "username": "maya",
+      "email": "maya@example.com",
+      "friendIds": [1, 4],
+      "imageLink": "https://cdn.dummyjson.com/product-images/beauty/red-nail-polish/thumbnail.webp",
+      "isAdmin": false
+    },
+    {
+      "id": 3,
+      "username": "jordan",
+      "email": "jordan@example.com",
+      "friendIds": [1, 5],
+      "imageLink": "https://cdn.dummyjson.com/product-images/beauty/red-lipstick/1.webp",
+        "isAdmin": false
+    },
+    {
+      "id": 4,
+      "username": "sophia",
+      "email": "sophia@example.com",
+      "friendIds": [2, 5],
+      "imageLink": "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp",
+        "isAdmin": false
+    },
+    {
+      "id": 5,
+      "username": "liam",
+      "email": "liam@example.com",
+      "friendIds": [3, 4],
+      "imageLink": "https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/1.webp",
+        "isAdmin": false
+    }
+  ]
+}
