@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { defineComponent, ref } from 'vue';
+import { ref } from 'vue';
 import addActivity from './addActivity.vue';
 import { useAuthStore } from '@/stores/authStore';
 import AddFriendsSidebar from './addFriendsSidebar.vue';
+import StatisticsSidebar from './statisticsSidebar.vue';
 
 const authStore = useAuthStore();
 const isAdmin = authStore.isAdmin;
@@ -10,6 +11,11 @@ const isAdmin = authStore.isAdmin;
 const isAddFriendsSidebarOpen = ref(false);
 function toggleAddFriendsSidebar() {
   isAddFriendsSidebarOpen.value = !isAddFriendsSidebarOpen.value;
+}
+
+const isStatisticsSidebarOpen = ref(false);
+function toggleStatisticsSidebar() {
+  isStatisticsSidebarOpen.value = !isStatisticsSidebarOpen.value;
 }
 
 const isMenuOpen = ref(false);
@@ -60,6 +66,9 @@ const closeAllMenus = () => {
           </button>
         </div>
       </div>
+      <button class="navbar-item" @click="toggleStatisticsSidebar">
+        Statistics
+      </button>
       <div v-if="isAdmin" class="navbar-item has-dropdown is-hoverable" :class="{ 'is-active': isMoreOpen }">
         <a class="navbar-link">
           Admin
@@ -86,6 +95,7 @@ const closeAllMenus = () => {
 </nav>
 
 <AddFriendsSidebar :width="300" :isActive="isAddFriendsSidebarOpen" @close="isAddFriendsSidebarOpen = false" />
+<StatisticsSidebar :width="320" :isActive="isStatisticsSidebarOpen" @close="isStatisticsSidebarOpen = false" />
 
 </template>
 
