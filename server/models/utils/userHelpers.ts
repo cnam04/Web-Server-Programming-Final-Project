@@ -1,3 +1,8 @@
+import type {
+    Climb,
+    Grade,
+    Session,
+} from "../../types"
 //  HELPER FUNCTIONS FOR METRICS CALCULATION
 // ---------------------------------------------------
 const OUTDOOR_GRADES: Grade[] = [
@@ -49,16 +54,16 @@ const BOULDER_GRADES: Grade[] = [
     "V17",
 ]
 
-export function roundTo(value: number, decimals: number = 2): number {
+function roundTo(value: number, decimals: number = 2): number {
     const factor = 10 ** decimals
     return Math.round(value * factor) / factor
 }
 
-export function toDateOnly(date: string): Date {
+function toDateOnly(date: string): Date {
     return new Date(`${date}T00:00:00Z`)
 }
 
-export function getSessionsCoveredWeeks(sessions: Session[]): number {
+function getSessionsCoveredWeeks(sessions: Session[]): number {
     if (sessions.length === 0) return 0
 
     const timestamps = sessions

@@ -197,3 +197,6 @@ export type DbSessionWithClimbsRow = DbSessionRow & {
     climbs?: DbClimbRow[] | null
 }
 
+export type UpdateUserInput = Partial<Omit<User, "id" | "friendIds">>
+
+
