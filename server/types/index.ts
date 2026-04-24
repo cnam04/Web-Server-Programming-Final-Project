@@ -159,4 +159,41 @@ export type BoulderGrade =
 export type Grade = OutdoorGrade | BoulderGrade
 
 
+// For internal use in models - represents the raw database rows
+
+export type DbUserRow = {
+    id: number
+    username: string
+    email: string | null
+    image_link: string | null
+    is_admin: boolean
+}
+
+export type DbSessionRow = {
+    id: number
+    user_id: number
+    title: string
+    date: string
+    location: string
+    type: string
+    duration: number
+    feeling: number
+    notes: string
+}
+
+export type DbClimbRow = {
+    id: number
+    session_id: number
+    grade: string
+    style: string
+    attempt: string
+    quality: number
+    comment: string
+    color: string | null
+    name: string | null
+}
+
+export type DbSessionWithClimbsRow = DbSessionRow & {
+    climbs?: DbClimbRow[] | null
+}
 

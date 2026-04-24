@@ -6,10 +6,10 @@ import { User, DataEnvelope, DataListEnvelope } from "../types"
 const app = Router()
 
 app.get("/", async (req, res) => {
-    const { list, count } = await getAll(req.query)
+    const { users, count } = await getAll(req.query)
     
     const response: DataListEnvelope<User> = {
-        data: list,
+        data: users,
         isSuccess: true,
         total: count,
     }

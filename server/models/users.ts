@@ -10,6 +10,10 @@ import type {
     Session,
     User,
     UserMetrics,
+    DbUserRow,
+    DbSessionRow,
+    DbClimbRow,
+    DbSessionWithClimbsRow,
 } from "../types"
 import { PagingRequest } from "../types/dataEnvelopes"
 import { connect } from "./supabase"
@@ -18,44 +22,6 @@ export const TABLE_NAME = "users"
 export const SESSIONS_TABLE = "sessions"
 export const CLIMBS_TABLE = "climbs"
 
-type DbUserRow = {
-    id: number
-    username: string
-    email: string | null
-    image_link: string | null
-    is_admin: boolean
-}
-
-
-// Move this to session model when implemented
-type DbSessionRow = {
-    id: number
-    user_id: number
-    title: string
-    date: string
-    location: string
-    type: string
-    duration: number
-    feeling: number
-    notes: string
-}
-
-// Move this to session model when implemented
-type DbClimbRow = {
-    id: number
-    session_id: number
-    grade: string
-    style: string
-    attempt: string
-    quality: number
-    comment: string
-    color: string | null
-    name: string | null
-}
-
-type DbSessionWithClimbsRow = DbSessionRow & {
-    climbs?: DbClimbRow[] | null
-}
 
 function toDomainClimb(row: DbClimbRow) {
     const base = {
