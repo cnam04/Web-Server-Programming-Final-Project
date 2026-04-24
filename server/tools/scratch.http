@@ -2,4 +2,49 @@
 GET http://localhost:3001/suny
 
 ###
-GET http://localhost:3001/api/users/
+GET http://localhost:3001/api/users
+
+###
+
+GET http://localhost:3001/api/users/3
+
+###
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+    "username": "newuser",
+    "email": "exmaple@ex.com",
+    "image_link": null,
+    "is_admin": false
+}
+
+# type DbUserRow = {
+#     id: number
+#     username: string
+#     email: string | null
+#     image_link: string | null
+#     is_admin: boolean
+# }
+
+###
+PATCH http://localhost:3001/api/users/7
+Content-Type: application/json
+
+{
+    "username": "updateusertest",
+    "email": "exmaple@ex.com",
+    "image_link": null,
+    "is_admin": false
+}
+
+
+### 
+DELETE http://localhost:3001/api/users/7
+
+###
+
+GET http://localhost:3001/api/users/1/sessions
+
+### 
+GET http://localhost:3001/api/users/1/metrics

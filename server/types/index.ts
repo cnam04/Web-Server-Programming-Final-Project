@@ -8,6 +8,22 @@ export type SessionId = number
 export type ClimbId = number
 export type FriendshipId = number
 
+// User metrics
+export type UserMetrics = {
+    sessionsPerWeek: number
+    climbsPerWeek: number
+    averageQuality: number
+    alltimeSessions: number
+    alltimeClimbs: number 
+    avgSessionDuration: number
+    alltimeDuration: number
+    avgRopeGrade: Grade | null
+    avgBoulderGrade: Grade | null
+    topRopeGrade: Grade | null
+    topBoulderGrade: Grade | null
+}
+
+
 // Users
 
 export type User = {

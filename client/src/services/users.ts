@@ -33,3 +33,9 @@ export async function getUsers() {
         data: response.data.map(toClientUser),
     }
 }
+
+export async function createUser(user: Partial<User>) {
+    const response = await api<ApiUser>('/users', user, { method: 'POST' })
+    
+    return toClientUser(response)
+}
