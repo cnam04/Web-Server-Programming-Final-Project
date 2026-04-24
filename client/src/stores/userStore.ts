@@ -1,11 +1,23 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { User, UserId } from '../types'
-import data from '../data/users.json'
+import { getUsers as getUsersApi } from '@/services/users'
 
 export const useUserStore = defineStore('users', () => {
-  const userData = data as { users: User[] }
-  const users = ref(userData.users)
+  const users = ref<User[]>([])
+
+  async function fetchUsers() {
+    const response = await getUsersApi()
+
+    if (response.isSuccess) {
+      users.value = response.data
+    }
+    return response
+  }
+
+  void fetchUsers().catch((error) => {
+    console.error('Failed to fetch users:', error)
+  })
 
   function getUserById(id: UserId): User | undefined {
     return users.value.find((user) => user.id === id)
@@ -43,6 +55,7 @@ export const useUserStore = defineStore('users', () => {
 
   return {
     users,
+    fetchUsers,
     getUserById,
     addUser,
     addFriend,

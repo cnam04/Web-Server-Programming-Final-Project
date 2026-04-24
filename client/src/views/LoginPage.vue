@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/userStore';
 import { useAuthStore } from '../stores/authStore'
 import router from '@/router';
 
 const userStore = useUserStore();
-const users = userStore.users;
+const { users } = storeToRefs(userStore)
 const selectedUserId = ref('');
 
 const authStore = useAuthStore();

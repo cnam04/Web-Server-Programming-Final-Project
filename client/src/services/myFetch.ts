@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_ROOT
+const API_BASE_URL = import.meta.env.VITE_API_ROOT?.trim() || '/api'
 
 export default function rest<T>(
   url: string,

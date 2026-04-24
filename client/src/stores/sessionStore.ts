@@ -1,11 +1,18 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, handleError, ref } from 'vue'
 import type { Session, SessionId, UserId, LoggedClimb, LoggedClimbId } from '../types'
 import data from '../data/sessions.json'
 import { useUserStore } from './userStore'
 
+import { api as myApi } from '../services/myFetch'
+
 type SessionStoreData = {
   sessions: Session[]
+}
+
+  export type FeedbackMessage = {
+  type: 'success' | 'danger' | 'info'
+  text: string
 }
 
 export const useSessionStore = defineStore('sessions', () => {
@@ -77,9 +84,40 @@ export const useSessionStore = defineStore('sessions', () => {
 
     return session.climbs.find((climb) => climb.id === climbId)
   }
+    
+
+
+  const messages = ref<FeedbackMessage[]>([])
+  function addMessage(text: string, type: FeedbackMessage['type'] = 'info') {
+    messages.value.push({ type, text })
+  }
+  function handleError(error: Error | string) {
+    const message = typeof error === 'string' ? error : error.message
+    addMessage(message, 'danger')
+    console.error(error)
+  }
+  const loadingCount = ref(0)
+    const isLoading = computed(() => loadingCount.value > 0)
+
+    function api<T>(endpoint: string, data?: unknown, options: RequestInit = {}) {
+    loadingCount.value++
+
+    return myApi<T>(endpoint, data, options)
+      .catch((error) => {
+        handleError(error)
+        throw error
+      })
+      .finally(() => {
+        loadingCount.value--
+      })
+  }
 
   return {
     sessions,
+    messages,
+    addMessage,
+    handleError,
+    isLoading,
     getSessionById,
     getSessionsByUserId,
     getUsernameBySessionId,
@@ -89,6 +127,10 @@ export const useSessionStore = defineStore('sessions', () => {
     removeClimbFromSession,
     updateClimbInSession,
     getClimbFromSession,
-    updateSession
+    updateSession,
+    api,
+    
   }
 })
+
+export default useSessionStore
