@@ -1,6 +1,7 @@
 import { Router } from "express"
-import { } from "../models/sessions"
-import { } from "../types"
+import {createSession } from "../models/sessions"
+import { Session } from "../types"
+import { DataEnvelope } from "../types/dataEnvelopes"
 
 const app = Router()
 
@@ -8,9 +9,12 @@ const app = Router()
 //  This controller is for any session-specific endpoints that don't fit in those categories
 
 .post("/", async (req, res) => {
-    // create a new session
-    // this endpoint isn't currently used by the frontend, but it would be used to create new sessions (either for a user or for a friend, depending on how we want to set it up)
-    res.send("Create a new session")
+    const newSession = await createSession(req.body)
+    const response: DataEnvelope<Session> = {
+        data: newSession,
+        isSuccess: true,
+    }
+    res.send(response)
 })
 
 export default app

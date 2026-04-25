@@ -81,3 +81,40 @@ GET http://localhost:3001/api/friends/1/sessions
 ### 
 POST http://localhost:3001/api/sessions
 Content-Type: application/json
+
+{
+    "userId": 1,
+    "title": "Model insert verification",
+    "date": "2026-04-25",
+    "location": "BCs Climbing Gym",
+    "type": "indoor",
+    "duration": 45,
+    "feeling": 4,
+    "notes": "Scratch test payload with server-shaped climbs.",
+    "climbs": [
+        {
+            "grade": "V4",
+            "style": "Boulder",
+            "attempt": "Flash",
+            "quality": 8,
+            "comment": "Clean movement and confident finish.",
+            "color": "Blue"
+        },
+        {
+            "grade": "V5",
+            "style": "Boulder",
+            "attempt": "Redpoint",
+            "quality": 7,
+            "comment": "Took a few tries but completed.",
+            "color": "Red"
+        },
+        {
+            "grade": "V6",
+            "style": "Boulder",
+            "attempt": "Project",
+            "quality": 6,
+            "comment": "Worked moves but did not send.",
+            "color": "Black"
+        }
+    ]
+}

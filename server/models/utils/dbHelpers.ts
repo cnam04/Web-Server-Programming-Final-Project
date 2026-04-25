@@ -93,6 +93,30 @@ export function toDbFriendship(input: {userId: number, friendId: number}) {
     }
 }
 
+export function toDbSession(input: Omit<Session, "id">) {
+    return {
+        user_id: input.userId,
+        title: input.title,
+        date: input.date,
+        location: input.location,
+        type: input.type,
+        duration: input.duration,
+        feeling: input.feeling,
+        notes: input.notes,
+    }
+}
+export function toDbClimbs(input: Omit<Climb, "id">, sessionId: number) {
+    return {
+        session_id: sessionId,
+        grade: input.grade,
+        style: input.style,
+        attempt: input.attempt,
+        quality: input.quality,
+        comment: input.comment,
+        color: "color" in input ? input.color : null,
+        name: "name" in input ? input.name : null,
+    }
+}
 export function toDbUpdateUser(input: UpdateUserInput) {
     const updatePayload: {
         username?: string
