@@ -118,3 +118,55 @@ Content-Type: application/json
         }
     ]
 }
+
+### 
+PATCH http://localhost:3001/api/sessions/7
+Content-Type: application/json
+
+{
+    "userId": 1,
+    "title": "Model edit verification",
+    "date": "2026-04-26",
+    "location": "Updated Location",
+    "type": "outdoor",
+    "duration": 60,
+    "feeling": 5,
+    "notes": "Updated session details and climbs.",
+    "climbs": [
+        {
+            "grade": "V4",
+            "style": "Boulder",
+            "attempt": "Flash",
+            "quality": 8,
+            "comment": "Clean movement and confident finish.",
+            "color": "Blue"
+        },
+        {
+            "grade": "V5",
+            "style": "Boulder",
+            "attempt": "Redpoint",
+            "quality": 7,
+            "comment": "Took a few tries but completed.",
+            "color": "Red"
+        },
+        {
+            "grade": "V6",
+            "style": "Boulder",
+            "attempt": "Project",
+            "quality": 6,
+            "comment": "Worked moves but did not send.",
+            "color": "Black"
+        },
+        {
+            "grade": "V3",
+            "style": "Boulder",
+            "attempt": "Onsight",
+            "quality": 9,
+            "comment": "Easily sent on first try.",
+            "color": "Green"
+        }
+    ]
+}
+
+###
+DELETE http://localhost:3001/api/sessions/11

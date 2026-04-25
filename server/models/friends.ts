@@ -82,12 +82,10 @@ export async function addFriend(data: {userId: number, friendId: number}) {
 export async function deleteFriend(data: {userId: number, friendId: number}) {
     const db = connect()
     const dbData = toDbFriendship(data)
-    console.log("Deleting friendship with data:", dbData)
     const result = await db.from(TABLE_NAME).delete({ count : "exact"}).match(dbData)
     if (result.error) {
         throw result.error
     }
-    console.log("result: ", result)
     const deletedCount = result.count ?? 0
     return deletedCount
 }
