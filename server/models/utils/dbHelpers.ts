@@ -2,6 +2,9 @@ import type {
     DbClimbRow,
     DbSessionRow,
     DbSessionWithClimbsRow,
+    DbFriendshipRow,
+    IndoorClimb,
+    OutdoorClimb,
     DbUserRow,
     Grade,
     ClimbStyle,
@@ -72,6 +75,21 @@ export function toDbInsertUser(input: Omit<User, "id">) {
         email: input.email ?? null,
         image_link: input.imageLink ?? null,
         is_admin: input.isAdmin,
+    }
+}
+
+export function toDomainFriendship(row: DbFriendshipRow) {
+    return {
+        id: row.id,
+        userId: row.user_id,
+        friendId: row.friend_id,
+    }
+}
+
+export function toDbFriendship(input: {userId: number, friendId: number}) {
+    return {
+        user_id: input.userId,
+        friend_id: input.friendId,
     }
 }
 

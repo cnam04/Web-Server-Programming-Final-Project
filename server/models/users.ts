@@ -70,10 +70,10 @@ export async function getAll(params: PagingRequest) {
     if (result.error) throw result.error
 
     const rows = (result.data ?? []) as DbUserRow[]
-    const list = rows.map(toDomainUser)
+    const users = rows.map(toDomainUser)
     const count = result.count ?? 0
 
-    return { list, count }
+    return { users, count }
 }
 
 export async function getById(id: number) {
@@ -144,8 +144,8 @@ export async function getUserSessions(userId: number) {
         throw result.error
     }
 
-    const sessions = (result.data ?? []).map((row) => {
-        const sessionRow = row as DbSessionWithClimbsRow
+    const rows = (result.data ?? []) as unknown as DbSessionWithClimbsRow[]
+    const sessions = rows.map((sessionRow) => {
         const climbs = (sessionRow.climbs ?? []).map(toDomainClimb)
         return toDomainSession(sessionRow, climbs)
     })

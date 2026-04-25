@@ -13,8 +13,8 @@ POST http://localhost:3001/api/users
 Content-Type: application/json
 
 {
-    "username": "newuser",
-    "email": "exmaple@ex.com",
+    "username": "meow",
+    "email": "e@ex.com",
     "image_link": null,
     "is_admin": false
 }
@@ -48,3 +48,30 @@ GET http://localhost:3001/api/users/1/sessions
 
 ### 
 GET http://localhost:3001/api/users/1/metrics
+
+###
+
+GET http://localhost:3001/api/friends/1
+
+###
+
+POST http://localhost:3001/api/friends
+Content-Type: application/json
+
+{
+    "userId": 1,
+    "friendId": 3
+}
+
+### 
+DELETE http://localhost:3001/api/friends
+Content-Type: application/json
+
+{
+    "userId": 1,
+    "friendId": 4
+}
+
+###
+
+GET http://localhost:3001/api/friends/1/sessions

@@ -160,7 +160,11 @@ export type Grade = OutdoorGrade | BoulderGrade
 
 
 // For internal use in models - represents the raw database rows
-
+export type DbFriendshipRow = {
+    id: number
+    user_id: number
+    friend_id: number
+}
 export type DbUserRow = {
     id: number
     username: string

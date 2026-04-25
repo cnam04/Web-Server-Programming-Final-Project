@@ -27,7 +27,7 @@ function toClientUser(user: ApiUser): User {
 
 export async function getUsers() {
     const response = await api<DataListEnvelope<ApiUser>>('/users')
-
+    console.log('Raw API response:', response)
     return {
         ...response,
         data: response.data.map(toClientUser),

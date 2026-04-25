@@ -3,6 +3,7 @@ config()
 import express from "express"
 import { DataEnvelope } from "./types"
 import usersController from "./controllers/users"
+import friendsController from "./controllers/friends"
 
 const PORT = process.env.PORT ?? 3000
 const SERVER = process.env.SERVER ?? "localhost"
@@ -25,8 +26,7 @@ app.use(express.static(STATIC_DIR))
         res.send("The best plan of my life!")
  })
 .use ("/api/users", usersController)
-
-
+.use ("/api/friends", friendsController)
  // error handling
  app.use(
     (
