@@ -33,6 +33,7 @@ CREATE TABLE users (
     email       TEXT        UNIQUE,
     image_link  TEXT,
     is_admin    BOOLEAN     NOT NULL DEFAULT FALSE,
+    password_hash TEXT      
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

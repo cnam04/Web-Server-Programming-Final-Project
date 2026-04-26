@@ -5,6 +5,7 @@ import { DataEnvelope } from "./types"
 import usersController from "./controllers/users"
 import friendsController from "./controllers/friends"
 import sessionsController from "./controllers/sessions"
+import authController from "./controllers/auth"
 
 const PORT = process.env.PORT ?? 3000
 const SERVER = process.env.SERVER ?? "localhost"
@@ -29,6 +30,7 @@ app.use(express.static(STATIC_DIR))
 .use ("/api/users", usersController)
 .use ("/api/friends", friendsController)
 .use ("/api/sessions", sessionsController)
+.use ("/api/auth", authController)
  // error handling
  app.use(
     (

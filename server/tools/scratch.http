@@ -170,3 +170,14 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:3001/api/sessions/11
+
+
+
+### 
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "password": "testpassword"
+}
