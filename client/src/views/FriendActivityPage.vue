@@ -3,23 +3,19 @@ import Navbar from '../components/navbar.vue'
 import { computed } from 'vue'
 import SessionCard from '../components/sessionCard.vue'
 import { useClimbingSessionStore } from '../stores/climbingSessionStore'
-import { useAuthStore } from '@/stores/authStore';
-import { useUserStore } from '@/stores/userStore';
+import { getFriendsStore } from '@/stores/friendsStore'
 
 
 const climbingSessionStore = useClimbingSessionStore()
-const authStore = useAuthStore()
-const userStore = useUserStore()
+const friendsStore = getFriendsStore()
 
-const currentUser = computed(() =>
-  userStore.users.find((user) => user.id === authStore.id)
-)
+const friendIds = computed(() => friendsStore.friends.map((friend) => friend.id))
 
 const friendSessions = computed(() => {
-  if (!currentUser.value) return []
+  if (friendIds.value.length === 0) return []
 
   const sessions = climbingSessionStore.sessions.filter((session) =>
-    currentUser.value!.friendIds.includes(session.userId)
+    friendIds.value.includes(session.userId)
   )
 
   sessions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -47,7 +43,7 @@ const friendSessions = computed(() => {
         <div class="columns is-multiline is-centered">
           <div
             v-for="session in friendSessions"
-            :key="session.date"
+            :key="session.id"
             class="column is-12 is-8-desktop is-7-widescreen"
           >
           <div class="session-card-shell">

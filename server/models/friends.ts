@@ -68,21 +68,54 @@ export async function getAll(params: PagingRequest, userId: number) {
 
 export async function addFriend(data: {userId: number, friendId: number}) {
     const db = connect()
-    const dbData = toDbFriendship(data)
-    const result = await db.from(TABLE_NAME).insert(dbData).select().single()
-    // friendship already exists error handling
-    if (result.error) {
-        throw result.error
+    const { userId, friendId } = data
+
+    // Persist both directions so each profile sees the friendship.
+    const relationships = [
+        { user_id: userId, friend_id: friendId },
+        { user_id: friendId, friend_id: userId },
+    ]
+
+    const upsertResult = await db
+        .from(TABLE_NAME)
+        .upsert(relationships, { onConflict: "user_id,friend_id", ignoreDuplicates: true })
+        .select()
+
+    if (upsertResult.error) {
+        throw upsertResult.error
     }
 
-    return toDomainFriendship(result.data) as Friendship
+    const insertedRows = (upsertResult.data ?? []) as DbFriendshipRow[]
+    const insertedForward = insertedRows.find(
+        (row) => row.user_id === userId && row.friend_id === friendId,
+    )
+
+    if (insertedForward) {
+        return toDomainFriendship(insertedForward) as Friendship
+    }
+
+    // If nothing new was inserted (e.g. duplicate), return the existing row.
+    const existing = await db
+        .from(TABLE_NAME)
+        .select("*")
+        .match({ user_id: userId, friend_id: friendId })
+        .single()
+
+    if (existing.error) {
+        throw existing.error
+    }
+
+    return toDomainFriendship(existing.data as DbFriendshipRow) as Friendship
     
 }
 
 export async function deleteFriend(data: {userId: number, friendId: number}) {
     const db = connect()
-    const dbData = toDbFriendship(data)
-    const result = await db.from(TABLE_NAME).delete({ count : "exact"}).match(dbData)
+    const { userId, friendId } = data
+    const result = await db
+        .from(TABLE_NAME)
+        .delete({ count : "exact"})
+        .or(`and(user_id.eq.${userId},friend_id.eq.${friendId}),and(user_id.eq.${friendId},friend_id.eq.${userId})`)
     if (result.error) {
         throw result.error
     }

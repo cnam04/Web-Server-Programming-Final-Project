@@ -43,9 +43,19 @@ const nonFriends = computed(() => {
 
 const searchQuery = ref('')
 
-function addFriend(friendId: number) {
-  if (authStore.id !== undefined) {
-    friendsStore.addFriend(authStore.id, friendId)
+async function addFriend(friendId: number) {
+  const currentUser = authStore.currentUser
+  if (!currentUser) return
+
+  await friendsStore.addFriend(currentUser.id, friendId)
+
+  if (!currentUser.friendIds.includes(friendId)) {
+    currentUser.friendIds.push(friendId)
+  }
+
+  const friend = userStore.users.find((entry) => entry.id === friendId)
+  if (friend && !friend.friendIds.includes(currentUser.id)) {
+    friend.friendIds.push(currentUser.id)
   }
 }
 

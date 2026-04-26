@@ -1,21 +1,54 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Session, SessionId, UserId, LoggedClimb, LoggedClimbId } from '../types'
-import sessionData from '../data/sessions.json'
 import { useUserStore } from './userStore'
-
-
-type SessionStoreData = {
-  sessions: Session[]
-}
-
-
+import { useAuthStore } from './authStore'
+import {
+  getUserSessions as getUserSessionsApi,
+  getFriendsSessions as getFriendsSessionsApi,
+  addSession as addSessionApi,
+  deleteSession as deleteSessionApi,
+  updateSession as updateSessionApi,
+} from '@/services/sessions'
 
 
 export const useClimbingSessionStore = defineStore('climbing-sessions', () => {
-  const initialData = sessionData as SessionStoreData
-  const sessions = ref(initialData.sessions)
+  const sessions = ref<Session[]>([])
+
+  const authStore = useAuthStore()
   const userStore = useUserStore()
+
+  async function hydrateSessions(userId: UserId) {
+    const [userSessionsResponse, friendSessionsResponse] = await Promise.all([
+      getUserSessionsApi(userId),
+      getFriendsSessionsApi(userId),
+    ])
+
+    sessions.value = [...userSessionsResponse.data, ...friendSessionsResponse.data]
+  }
+
+  watch(
+    () => authStore.id,
+    (userId) => {
+      if (userId === undefined) {
+        sessions.value = []
+        return
+      }
+
+      hydrateSessions(userId)
+    },
+    { immediate: true }
+  )
+
+  function replaceSessionInState(updatedSession: Session) {
+    const index = sessions.value.findIndex((session) => session.id === updatedSession.id)
+    if (index === -1) {
+      sessions.value.push(updatedSession)
+      return
+    }
+
+    sessions.value[index] = updatedSession
+  }
     
   function getSessionById(id: SessionId): Session | undefined {
     return sessions.value.find((session) => session.id === id)
@@ -33,43 +66,55 @@ export const useClimbingSessionStore = defineStore('climbing-sessions', () => {
     return user?.username ?? 'Unknown user'
   }
 
-  function addSession(session: Session) {
-    sessions.value.push(session)
+  async function addSession(session: Session) {
+    const { id: _ignored, ...newSession } = session
+    const response = await addSessionApi(newSession)
+    sessions.value.push(response.data)
   }
 
-  function removeSession(sessionId: SessionId) {
+  async function removeSession(sessionId: SessionId) {
+    await deleteSessionApi(sessionId)
     sessions.value = sessions.value.filter((session) => session.id !== sessionId)
   }
 
-  function addClimbToSession(sessionId: SessionId, climb: LoggedClimb) {
+  async function addClimbToSession(sessionId: SessionId, climb: LoggedClimb) {
     const session = getSessionById(sessionId)
     if (!session) return
 
-    session.climbs.push(climb)
+    const response = await updateSessionApi(sessionId, {
+      climbs: [...session.climbs, climb],
+    })
+    replaceSessionInState(response.data)
   }
 
-  function removeClimbFromSession(sessionId: SessionId, climbId: LoggedClimbId) {
+  async function removeClimbFromSession(sessionId: SessionId, climbId: LoggedClimbId) {
     const session = getSessionById(sessionId)
     if (!session) return
 
-    session.climbs = session.climbs.filter((climb) => climb.id !== climbId)
+    const response = await updateSessionApi(sessionId, {
+      climbs: session.climbs.filter((climb) => climb.id !== climbId),
+    })
+    replaceSessionInState(response.data)
   }
 
-  function updateSession(updatedSession: Session) {
-    const index = sessions.value.findIndex((session) => session.id === updatedSession.id)
-    if (index === -1) return
-
-    sessions.value[index] = updatedSession
+  async function updateSession(updatedSession: Session) {
+    const response = await updateSessionApi(updatedSession.id, updatedSession)
+    replaceSessionInState(response.data)
   }
 
-  function updateClimbInSession(sessionId: SessionId, updatedClimb: LoggedClimb) {
+  async function updateClimbInSession(sessionId: SessionId, updatedClimb: LoggedClimb) {
     const session = getSessionById(sessionId)
     if (!session) return
 
     const index = session.climbs.findIndex((climb) => climb.id === updatedClimb.id)
     if (index === -1) return
 
-    session.climbs[index] = updatedClimb
+    const updatedClimbs = [...session.climbs]
+    updatedClimbs[index] = updatedClimb
+    const response = await updateSessionApi(sessionId, {
+      climbs: updatedClimbs,
+    })
+    replaceSessionInState(response.data)
   }
 
   function getClimbFromSession(
