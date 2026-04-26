@@ -1,36 +1,39 @@
-import { api } from './myFetch'
-import type { DataListEnvelope } from '../../../server/types'
-import type { User, UserId } from '@/types'
+import useSessionStore from '../stores/sessionStore'
+import type { DataListEnvelope, DataEnvelope } from '../../../server/types/dataEnvelopes'
+import type { User, UserId, UpdateUserInput } from '../../../server/types'
 
-type ApiUser = {
-    id: number
-    username: string
-    email?: string
-    image_link?: string
-    imageLink?: string
-    is_admin?: boolean
-    isAdmin?: boolean
-    friend_ids?: number[]
-    friendIds?: number[]
+export function getUsers(){
+    const session = useSessionStore()
+    return session.api<DataListEnvelope<User>>('/users')
 }
 
-function toClientUser(user: ApiUser): User {
-    return {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        imageLink: user.imageLink ?? user.image_link,
-        isAdmin: user.isAdmin ?? user.is_admin ?? false,
-        friendIds: (user.friendIds ?? user.friend_ids ?? []) as UserId[],
-    }
+export function getUserById(id: UserId) {
+    const session = useSessionStore()
+    return session.api<DataEnvelope<User>>(`/users/${id}`)
 }
 
-export async function getUsers() {
-    const response = await api<DataListEnvelope<ApiUser>>('/users')
-    console.log('Raw API response:', response)
-    return {
-        ...response,
-        data: response.data.map(toClientUser),
-    }
+
+export function createUser(user: Omit<User, 'id'>) {
+    const session = useSessionStore()
+    return session.api<DataEnvelope<User>>('/users', user)
 }
 
+export function updateUser(id: UserId, user: User | UpdateUserInput) {
+    const session = useSessionStore()
+    return session.api<DataEnvelope<User>>(`/users/${id}`, user, { method: 'PATCH' })
+}
+
+export function deleteUser(id: UserId) {
+    const session = useSessionStore()
+    return session.api(`/users/${id}`, undefined, { method: 'DELETE' })
+}
+
+export function getUserSessions(userId: UserId) {
+    const session = useSessionStore()
+    return session.api<DataListEnvelope<{ sessionId: string }>>(`/users/${userId}/sessions`)
+}
+
+export function getUserMetrics(userId: UserId) {
+    const session = useSessionStore()
+    return session.api<DataEnvelope<{ activeSessions: number; totalSessions: number }>>(`/users/${userId}/metrics`)
+}

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { computed, handleError, ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import { api as myApi } from '../services/myFetch'
 
