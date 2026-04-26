@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import Navbar from '../components/navbar.vue';
 import { useUserStore } from '../stores/userStore';
+import useFriendsStore from '../stores/friendsStore';
 import type { User, UserId } from '../types';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import Modal from '../components/modal.vue';
 import addUserForm from '../components/addUserForm.vue';
 import editUserForm from '../components/editUserForm.vue';
 
-const users = useUserStore();
+const userStore = useUserStore();
+const friendsStore = useFriendsStore();
+
 function findFriendsByIds(friendIds: UserId[]): User[] {
-  return friendIds.map((id) => users.getUserById(id)).filter((user): user is User => user !== undefined);
+	return friendIds
+		.map((id) => userStore.users.find((user) => user.id === id))
+		.filter((user): user is User => user !== undefined);
 }
 function deleteUser(userId: UserId) {
-  users.deleteUser(userId);
+	userStore.deleteUser(userId);
 }
 
 const isAddModalOpen = ref(false);
@@ -35,6 +40,9 @@ function handleEditSessionSaved() {
 }
 
 let selectedUser = ref<User | null>(null)
+
+const selectedUserEmail = computed(() => selectedUser.value?.email ?? '')
+const selectedUserImageLink = computed(() => selectedUser.value?.imageLink ?? '')
 
 function openEditUserModal(user: User) {
   selectedUser.value = user
@@ -65,7 +73,6 @@ function closeEditUserModal() {
 						<th>User ID</th>
 						<th>Username</th>
 						<th>Email</th>
-						<th>Friends</th>
 						<th><button class="button is-normal is-rounded is-info add-user" @click="openAddUserModal">
 								<i class="fas fa-edit"></i>
 								<span>Add User</span>
@@ -81,12 +88,11 @@ function closeEditUserModal() {
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="user in users.users" :key="user.id">
+					<tr v-for="user in userStore.users" :key="user.id">
 						<td><img :src="user.imageLink" alt="User Image" class="image is-32x32" /></td>
 						<td>{{ user.id }}</td>
 						<td>{{ user.username }}</td>
 						<td>{{ user.email }}</td>
-						<td>{{ findFriendsByIds(user.friendIds).map((friend) => friend.username).join(', ') }}</td>
 						<td>
 							<button class="button is-normal is-rounded is-danger" @click="deleteUser(user.id)">
 							<i class="fas fa-trash"></i>
@@ -109,10 +115,10 @@ function closeEditUserModal() {
 					>
 					<editUserForm
 						v-if="selectedUser"
-						:currentEmail="selectedUser.email"
+						:currentEmail="selectedUserEmail"
 						:currentUsername="selectedUser.username"
 						:currentIsAdmin="selectedUser.isAdmin"
-						:currentImageLink="selectedUser.imageLink"
+						:currentImageLink="selectedUserImageLink"
 						:currentFriendIds="selectedUser.friendIds"
 						:currentId="selectedUser.id"
 						@user-edited="handleEditSessionSaved"

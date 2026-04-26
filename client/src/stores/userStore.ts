@@ -5,18 +5,21 @@ import {
   getUsers, 
   getUserById as getSingularUserApi, 
   createUser as createUserApi,
+  updateUser as updateUserApi,
   deleteUser as deleteUserApi
 } from '@/services/users'
 
 export const useUserStore = defineStore('users', () => {
-  
+  const users = ref<User[]>([])
+
   getUsers().then((data) => {
     users.value = data.data
   })
-  
-  const users = ref<User[]>([])
 
   async function getUserById(id: UserId){
+    const localUser = users.value.find((user) => user.id === id)
+    if (localUser) return localUser
+
     const response = await getSingularUserApi(id)
     return response.data
   }
@@ -27,15 +30,20 @@ export const useUserStore = defineStore('users', () => {
   }
 
   async function deleteUser(userId: UserId) {
-    const response = await deleteUserApi(userId)
+    await deleteUserApi(userId)
     users.value = users.value.filter((user) => user.id !== userId)
   }
 
   async function editUser(userId: UserId, updatedUser: Partial<User>) {
-    const user = await getUserById(userId)
-    if (!user) return
+    const response = await updateUserApi(userId, updatedUser)
+    const index = users.value.findIndex((user) => user.id === userId)
 
-    Object.assign(user, updatedUser)
+    if (index >= 0) {
+      users.value[index] = response.data
+      return
+    }
+
+    users.value.push(response.data)
   }
 
   return {

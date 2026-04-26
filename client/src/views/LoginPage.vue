@@ -11,10 +11,10 @@ const selectedUserId = ref('');
 
 const authStore = useAuthStore();
 function handleLogin(){
-    const user = userStore.getUserById(Number(selectedUserId.value))
-    if (user) {
-        authStore.login(user)
-    }
+  const user = users.value.find((entry) => entry.id === Number(selectedUserId.value))
+  if (user) {
+    authStore.login(user)
+  }
 
     if (authStore.isAdmin){
         router.push('/admin')

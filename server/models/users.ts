@@ -118,7 +118,7 @@ export async function update(id: number, item: UpdateUserInput) {
 export async function deleteById(id: number) {
     const db = connect()
 
-    const result = await db.from(TABLE_NAME).delete().eq("id", id)
+    const result = await db.from(TABLE_NAME).delete({ count: "exact" }).eq("id", id)
     const deletedCount = result.count ?? 0
     if (deletedCount === 0) {
         const error = new Error("User not found") as Error & { status?: number }

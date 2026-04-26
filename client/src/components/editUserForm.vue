@@ -30,10 +30,14 @@
         isAdmin: props.currentIsAdmin,
     })
 
-    function handleSubmit() {
-        userStore.editUser(currentUser.value.id, currentUser.value)
+    async function handleSubmit() {
+      try {
+        await userStore.editUser(currentUser.value.id, currentUser.value)
         showToast('User edited successfully!', 'is-success')
         emit('user-edited')
+      } catch {
+        showToast('Unable to edit user. Please try again.', 'is-danger')
+      }
     }
 
 </script>
@@ -43,7 +47,7 @@
 <div class="field">
   <label class="label">Username</label>
   <div class="control has-icons-left has-icons-right">
-    <input class="input" type="text" placeholder="props.currentUsername" v-model="currentUser.username">
+    <input class="input" type="text" :placeholder="props.currentUsername" v-model="currentUser.username">
     <span class="icon is-small is-left">
       <i class="fas fa-user"></i>
     </span>
@@ -53,7 +57,7 @@
 <div class="field">
   <label class="label">Email</label>
   <div class="control has-icons-left has-icons-right">
-    <input class="input" type="email" placeholder="props.currentEmail" v-model="currentUser.email">
+    <input class="input" type="email" :placeholder="props.currentEmail" v-model="currentUser.email">
     <span class="icon is-small is-left">
       <i class="fas fa-envelope"></i>
     </span>
@@ -63,7 +67,7 @@
 <div class="field">
   <label class="label">Add a new image link</label>
   <div class="control has-icons-left has-icons-right">
-    <input class="input" type="text" placeholder="props.currentImageLink" v-model="currentUser.imageLink">
+    <input class="input" type="text" :placeholder="props.currentImageLink" v-model="currentUser.imageLink">
     <span class="icon is-small is-left">
       <i class="fas fa-link"></i>
     </span>
