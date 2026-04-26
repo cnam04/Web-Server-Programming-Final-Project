@@ -27,6 +27,13 @@ export const useClimbingSessionStore = defineStore('climbing-sessions', () => {
     sessions.value = [...userSessionsResponse.data, ...friendSessionsResponse.data]
   }
 
+  async function refreshFriendSessions(userId: UserId) {
+    const friendSessionsResponse = await getFriendsSessionsApi(userId)
+    const ownSessions = sessions.value.filter((session) => session.userId === userId)
+
+    sessions.value = [...ownSessions, ...friendSessionsResponse.data]
+  }
+
   watch(
     () => authStore.id,
     (userId) => {
@@ -129,6 +136,7 @@ export const useClimbingSessionStore = defineStore('climbing-sessions', () => {
 
   return {
     sessions,
+    refreshFriendSessions,
     getSessionById,
     getSessionsByUserId,
     getUsernameBySessionId,
