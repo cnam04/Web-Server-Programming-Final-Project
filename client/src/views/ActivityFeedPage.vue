@@ -4,25 +4,25 @@ import { computed } from 'vue'
 import navbar from '../components/navbar.vue';
 import SessionCard from '../components/sessionCard.vue'
 import ActivityForm from '../components/activityForm.vue'
-import { useSessionStore } from '../stores/sessionStore'
+import { useClimbingSessionStore } from '../stores/climbingSessionStore'
 import { useAuthStore } from '@/stores/authStore';
 import { ref } from 'vue';
 import { Session } from '@/types';
 import Modal from '../components/modal.vue';
 import { showToast } from '@/utils/toast';
 
-const sessionStore = useSessionStore()
+const climbingSessionStore = useClimbingSessionStore()
 const authStore = useAuthStore()
 
 const currentId = computed(() => authStore.id)
 const currentUsername = computed(() => authStore.username)
 const mySessions = computed(() => {
   if (currentId.value === undefined) return []
-  return sessionStore.getSessionsByUserId(currentId.value).reverse()
+  return climbingSessionStore.getSessionsByUserId(currentId.value).reverse()
 })
 
 function deleteSession(sessionId: number) {
-  sessionStore.removeSession(sessionId)
+  climbingSessionStore.removeSession(sessionId)
   showToast('Session deleted successfully!', 'is-success')
 }
 

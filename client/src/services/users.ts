@@ -34,8 +34,3 @@ export async function getUsers() {
     }
 }
 
-export async function createUser(user: Partial<User>) {
-    const response = await api<ApiUser>('/users', user, { method: 'POST' })
-    
-    return toClientUser(response)
-}

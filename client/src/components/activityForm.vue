@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useSessionStore } from '../stores/sessionStore'
+import { useClimbingSessionStore } from '../stores/climbingSessionStore'
 import { useAuthStore } from '../stores/authStore'
 
 import type {
@@ -17,7 +17,7 @@ import type {
   Quality,
 } from '../types'
 
-const sessionStore = useSessionStore()
+const climbingSessionStore = useClimbingSessionStore()
 const authStore = useAuthStore()
 const props = defineProps<{
   mode: 'create' | 'edit'
@@ -114,12 +114,12 @@ function clampQuality(value: number): Quality {
 }
 
 function nextSessionId(): number {
-  const existingIds = sessionStore.sessions.map((existingSession) => existingSession.id)
+  const existingIds = climbingSessionStore.sessions.map((existingSession) => existingSession.id)
   return Math.max(0, ...existingIds) + 1
 }
 
 function nextClimbId(): number {
-  const sessionClimbIds = sessionStore.sessions.flatMap((existingSession) =>
+  const sessionClimbIds = climbingSessionStore.sessions.flatMap((existingSession) =>
     existingSession.climbs.map((climb) => climb.id)
   )
   const draftClimbIds = climbs.value.map((climb) => climb.id)
@@ -211,7 +211,7 @@ function handleSubmit() {
       climbs: formattedClimbs,
     }
 
-    sessionStore.updateSession(updatedSession)
+    climbingSessionStore.updateSession(updatedSession)
     console.log('Updated session:', updatedSession)
     emit('session-saved')
     return
@@ -235,7 +235,7 @@ function handleSubmit() {
     climbs: formattedClimbs,
   }
 
-  sessionStore.addSession(newSession)
+  climbingSessionStore.addSession(newSession)
   console.log('Saved session:', newSession)
 
   initializeForm()

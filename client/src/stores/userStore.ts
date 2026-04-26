@@ -19,8 +19,8 @@ export const useUserStore = defineStore('users', () => {
     console.error('Failed to fetch users:', error)
   })
 
-  function getUserById(id: UserId): User | undefined {
-    return users.value.find((user) => user.id === id)
+  async function getUserById(id: UserId){
+    
   }
 
   function addUser(user: User) {

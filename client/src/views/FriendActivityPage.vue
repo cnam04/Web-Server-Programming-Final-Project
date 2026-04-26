@@ -2,12 +2,12 @@
 import Navbar from '../components/navbar.vue'
 import { computed } from 'vue'
 import SessionCard from '../components/sessionCard.vue'
-import { useSessionStore } from '../stores/sessionStore'
+import { useClimbingSessionStore } from '../stores/climbingSessionStore'
 import { useAuthStore } from '@/stores/authStore';
 import { useUserStore } from '@/stores/userStore';
 
 
-const sessionStore = useSessionStore()
+const climbingSessionStore = useClimbingSessionStore()
 const authStore = useAuthStore()
 const userStore = useUserStore()
 
@@ -18,7 +18,7 @@ const currentUser = computed(() =>
 const friendSessions = computed(() => {
   if (!currentUser.value) return []
 
-  const sessions = sessionStore.sessions.filter((session) =>
+  const sessions = climbingSessionStore.sessions.filter((session) =>
     currentUser.value!.friendIds.includes(session.userId)
   )
 

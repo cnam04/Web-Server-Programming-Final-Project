@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
-import { useSessionStore } from '@/stores/sessionStore'
+import { useClimbingSessionStore } from '@/stores/climbingSessionStore'
 import { buildUserStatRows } from '@/utils/userStatistics'
 
 const props = defineProps<{
@@ -14,11 +14,11 @@ const emit = defineEmits<{
 }>()
 
 const authStore = useAuthStore()
-const sessionStore = useSessionStore()
+const climbingSessionStore = useClimbingSessionStore()
 
 const currentUserSessions = computed(() => {
   if (authStore.id === undefined) return []
-  return sessionStore.getSessionsByUserId(authStore.id)
+  return climbingSessionStore.getSessionsByUserId(authStore.id)
 })
 
 const statRows = computed(() => buildUserStatRows(currentUserSessions.value))
