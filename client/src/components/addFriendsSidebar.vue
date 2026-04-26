@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import { useAuthStore } from '@/stores/authStore'
+import useFriendsStore from '@/stores/friendsStore'
 
 const props = defineProps<{
   width: number
@@ -14,34 +15,46 @@ const emit = defineEmits<{
 
 const userStore = useUserStore()
 const authStore = useAuthStore()
+const friendsStore = useFriendsStore()
 
-const nonFriends = computed(() => {
-  const currentUser = authStore.currentUser
-  if (!currentUser) return []
-  return userStore.users.filter(
-    (u) => u.id !== currentUser.id && !currentUser.friendIds.includes(u.id)
-  )
-})
+const currentFriendIds = computed(() => authStore.currentUser?.friendIds ?? [])
 
 const friends = computed(() => {
   const currentUser = authStore.currentUser
   if (!currentUser) return []
-  return userStore.users.filter((u) => currentUser.friendIds.includes(u.id))
+  return friendsStore.friends.length > 0
+    ? friendsStore.friends
+    : userStore.users.filter((u) => currentFriendIds.value.includes(u.id))
+})
+
+const nonFriends = computed(() => {
+  const currentUser = authStore.currentUser
+  if (!currentUser) return []
+
+  const friendIds =
+    friends.value.length > 0
+      ? friends.value.map((friend) => friend.id)
+      : currentFriendIds.value
+
+  return userStore.users.filter(
+    (u) => u.id !== currentUser.id && !friendIds.includes(u.id)
+  )
 })
 
 const searchQuery = ref('')
 
 function addFriend(friendId: number) {
   if (authStore.id !== undefined) {
-    userStore.addFriend(authStore.id, friendId)
+    friendsStore.addFriend(authStore.id, friendId)
   }
 }
 
-function removeFriend(friendId: number) {
+async function removeFriend(friendId: number) {
   const currentUser = authStore.currentUser
   if (!currentUser) return
   currentUser.friendIds = currentUser.friendIds.filter((id) => id !== friendId)
-  const friend = userStore.getUserById(friendId)
+  await friendsStore.removeFriend(currentUser.id, friendId)
+  const friend = userStore.users.find((entry) => entry.id === friendId)
   if (friend) {
     friend.friendIds = friend.friendIds.filter((id) => id !== currentUser.id)
   }
