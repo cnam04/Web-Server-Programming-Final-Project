@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import addActivity from './addActivity.vue';
 import { useAuthStore } from '@/stores/authStore';
 import AddFriendsSidebar from './addFriendsSidebar.vue';
 import StatisticsSidebar from './statisticsSidebar.vue';
+import { useRouter } from 'vue-router';
 
 const authStore = useAuthStore();
-const isAdmin = authStore.isAdmin;
+const router = useRouter();
+const isAdmin = computed(() => authStore.isAdmin);
+const isLoggedIn = computed(() => !!authStore.currentUser);
 
 const isAddFriendsSidebarOpen = ref(false);
 function toggleAddFriendsSidebar() {
@@ -38,6 +41,12 @@ const toggleMore = () => {
 
 const closeAllMenus = () => {
   closeMenu();
+};
+
+const handleLogout = () => {
+  authStore.logout();
+  closeAllMenus();
+  router.push('/');
 };
 
 </script>
@@ -85,8 +94,11 @@ const closeAllMenus = () => {
       <div class="navbar-item">
         <div class="buttons">
           <addActivity> </addActivity>
-          <RouterLink to="/" class="button is-light" @click="closeMenu">
-            Log in
+          <button v-if="isLoggedIn" class="button is-light" @click="handleLogout">
+            Logout
+          </button>
+          <RouterLink v-else to="/" class="button is-light" @click="closeMenu">
+            Sign in
           </RouterLink>
         </div>
       </div>
