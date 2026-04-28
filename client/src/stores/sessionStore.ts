@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 import { api as myApi } from '../services/myFetch'
+import { useAuthStore } from './authStore'
 
 export type FeedbackMessage = {
   type: 'success' | 'danger' | 'info'
@@ -9,6 +10,8 @@ export type FeedbackMessage = {
 }
 
 export const useSessionStore = defineStore('sessions', () => {
+  const authStore = useAuthStore()
+  const token = computed(() => authStore.token ?? null)
   
 
   const messages = ref<FeedbackMessage[]>([])
@@ -25,7 +28,10 @@ export const useSessionStore = defineStore('sessions', () => {
 
     function api<T>(endpoint: string, data?: unknown, options: RequestInit = {}) {
     loadingCount.value++
-
+    options.headers = {
+        ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
+      ...options.headers,
+    }
     return myApi<T>(endpoint, data, options)
       .catch((error) => {
         handleError(error)

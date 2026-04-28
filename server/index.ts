@@ -17,13 +17,14 @@ const app = express()
 // Middleware
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*") // Allow requests from any origin
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE") // Allow specific HTTP methods
-    res.setHeader("Access-Control-Allow-Headers", "*") // Allow specific headers
-    next()
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS") // Allow specific HTTP methods
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization") // Allow specific headers
     if (req.method === "OPTIONS") {
         res.sendStatus(200)
         return
     }
+
+    next()
 })
 .use(express.json()) // Middleware to parse JSON request bodies
 .use(validateJWT) // Middleware to validate JWT and attach user to request if valid

@@ -26,7 +26,7 @@ export const getFriendsStore = defineStore('friends', () => {
     watch(
         () => authStore.id,
         () => {
-            loadFriends()
+            void loadFriends().catch(() => undefined)
         },
         { immediate: true }
     )

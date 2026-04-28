@@ -42,7 +42,7 @@ export const useClimbingSessionStore = defineStore('climbing-sessions', () => {
         return
       }
 
-      hydrateSessions(userId)
+      void hydrateSessions(userId).catch(() => undefined)
     },
     { immediate: true }
   )

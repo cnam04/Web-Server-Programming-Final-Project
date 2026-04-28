@@ -47,7 +47,11 @@ async function addFriend(friendId: number) {
   const currentUser = authStore.currentUser
   if (!currentUser) return
 
-  await friendsStore.addFriend(currentUser.id, friendId)
+  try {
+    await friendsStore.addFriend(currentUser.id, friendId)
+  } catch {
+    return
+  }
 
   if (!currentUser.friendIds.includes(friendId)) {
     currentUser.friendIds.push(friendId)
@@ -62,8 +66,14 @@ async function addFriend(friendId: number) {
 async function removeFriend(friendId: number) {
   const currentUser = authStore.currentUser
   if (!currentUser) return
+
+  try {
+    await friendsStore.removeFriend(currentUser.id, friendId)
+  } catch {
+    return
+  }
+
   currentUser.friendIds = currentUser.friendIds.filter((id) => id !== friendId)
-  await friendsStore.removeFriend(currentUser.id, friendId)
   const friend = userStore.users.find((entry) => entry.id === friendId)
   if (friend) {
     friend.friendIds = friend.friendIds.filter((id) => id !== currentUser.id)

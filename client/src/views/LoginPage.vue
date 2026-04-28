@@ -10,17 +10,29 @@ const { users } = storeToRefs(userStore)
 const selectedUserId = ref('');
 
 const authStore = useAuthStore();
-function handleLogin(){
+async function handleLogin(){
   const user = users.value.find((entry) => entry.id === Number(selectedUserId.value))
   if (user) {
-    authStore.login(user)
-  }
+    if (!user.email) {
+      alert('Selected user does not have an email.')
+      return
+    }
+
+    try {
+      await authStore.login(user.email)
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Login failed.')
+      return
+    }
 
     if (authStore.isAdmin){
         router.push('/admin')
     }else{
         router.push('/activity-feed')
     }
+  } else {
+    alert('Please select a user to log in.')
+  }
 }
 
 </script>
