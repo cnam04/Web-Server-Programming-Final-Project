@@ -4,23 +4,10 @@ import { login } from "../models/auth"
 const app = Router()
 
 .post("/login", async (req, res) => {
-    const username = req.body.username
-    const password = req.body.password
-
-    
+    const { email, password } = req.body
     try{
-        const {
-            token,
-            userData
-        } = await login(username, password)
-        
-        const credentials = {
-            token: token,
-            user: userData
-        }
-
-        const response: DataEnvelope<typeof credentials> = {
-                data: credentials,
+        const response: DataEnvelope<Awaited<ReturnType<typeof login>>> = {
+                data: await login(email, password),
                 isSuccess: true
         }
         res.send(response)

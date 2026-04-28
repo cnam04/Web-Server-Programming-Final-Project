@@ -9,6 +9,15 @@ const app = Router()
 //  This controller is for any session-specific endpoints that don't fit in those categories
 
 .post("/", async (req, res) => {
+    const userId = req.user?.id ?? null
+    if (!userId) {
+        res.status(401).send({
+            data: null,
+            isSuccess: false,
+            message: "Unauthorized",
+        })
+        return
+    }
     const newSession = await createSession(req.body)
     const response: DataEnvelope<Session> = {
         data: newSession,
@@ -16,6 +25,15 @@ const app = Router()
     }
     res.send(response)
 }).patch("/:id", async (req, res) => {
+    const userId = req.user?.id ?? null
+    if (!userId) {
+        res.status(401).send({
+            data: null,
+            isSuccess: false,
+            message: "Unauthorized",
+        })
+        return
+    }
     const editedSession = await editSession(Number(req.params.id), req.body)
     const response: DataEnvelope<Session> = {
         data: editedSession,
@@ -23,13 +41,17 @@ const app = Router()
     }
     res.send(response)
 }).delete("/:id", async (req, res) => {
-    const id = Number(req.params.id)
-    if (Number.isNaN(id)) {
-        const error = new Error("Invalid session id") as Error & { status?: number }
-        error.status = 400
-        throw error
+    
+    const userId = req.user?.id ?? null
+    if (!userId) {
+        res.status(401).send({
+            data: null,
+            isSuccess: false,
+            message: "Unauthorized",
+        })
+        return
     }
-    const deletedCount = await deleteSession(id)
+    const deletedCount = await deleteSession(Number(req.params.id))
     // For simplicity, we'll just return a success message since the frontend can remove the session from the UI immediately
     // In a more complex app, you might want to return the deleted session data or handle related data cleanup
     const response: DataEnvelope<null> = {

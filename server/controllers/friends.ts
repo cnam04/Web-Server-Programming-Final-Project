@@ -6,11 +6,14 @@ const app = Router()
 
 
 app.get("/:userId", async (req, res) => {
-    const userId = Number(req.params.userId)
-    if (Number.isNaN(userId)) {
-        const error = new Error("Invalid user id") as Error & { status?: number }
-        error.status = 400
-        throw error
+    const userId = req.user?.id ?? null
+    if (!userId) {
+        res.status(401).send({
+            data: null,
+            isSuccess: false,
+            message: "Unauthorized",
+        })
+        return
     }
 
     const {listOfFriends, count} = await getAll(req.query, userId)
@@ -21,6 +24,17 @@ app.get("/:userId", async (req, res) => {
     }
     res.send(response)
 }).post("/", async (req, res)=>{ // friend ids in body
+    const userId = req.user?.id ?? null
+    if (!userId) {
+        res.status(401).send({
+            data: null,
+            isSuccess: false,
+            message: "Unauthorized",
+        })
+        return
+    }
+    
+    
     const newFriendship = await addFriend(req.body)
 
     const response: DataEnvelope<Friendship> = {
@@ -29,6 +43,17 @@ app.get("/:userId", async (req, res) => {
     }
     res.send(response)
 }).delete("/", async (req, res)=>{
+    const userId = req.user?.id ?? null
+    if (!userId) {
+        res.status(401).send({
+            data: null,
+            isSuccess: false,
+            message: "Unauthorized",
+        })
+        return
+    }
+    
+    
     const deletedCount = await deleteFriend(req.body)
     const response: DataEnvelope<null> = {
         data: null,
@@ -37,11 +62,14 @@ app.get("/:userId", async (req, res) => {
     }
     res.send(response)
 }).get("/:userId/sessions", async (req, res)=>{
-    const userId = Number(req.params.userId)
-    if (Number.isNaN(userId)) {
-        const error = new Error("Invalid user id") as Error & { status?: number }
-        error.status = 400
-        throw error
+    const userId = req.user?.id ?? null
+    if (!userId) {
+        res.status(401).send({
+            data: null,
+            isSuccess: false,
+            message: "Unauthorized",
+        })
+        return
     }
     const {friendSessions, count} = await getFriendSessions(req.query, userId)
 

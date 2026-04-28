@@ -11,10 +11,11 @@ GET http://localhost:3001/api/users/3
 ###
 POST http://localhost:3001/api/users
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJtYXlhIiwiZW1haWwiOiJtYXlhQGV4YW1wbGUuY29tIiwiaW1hZ2VMaW5rIjoiaHR0cHM6Ly9idWxtYS5pby9pbWFnZXMvcGxhY2Vob2xkZXJzLzEyOHgxMjgucG5nIiwiaXNBZG1pbiI6ZmFsc2UsImZyaWVuZElkcyI6W10sImlhdCI6MTc3NzMzODYwNywiZXhwIjoxNzc3MzQyMjA3fQ.WxHYUyBdhSCNf07wAj11SC-xN_Jy1uAMIMuM0Fa-QSw
 
 {
-    "username": "meow",
-    "email": "e@ex.com",
+    "username": "testInsertWithAuth2",
+    "email": "bbbb@.com",
     "image_link": null,
     "is_admin": false
 }
@@ -178,6 +179,5 @@ POST http://localhost:3001/api/auth/login
 Content-Type: application/json
 
 {
-    "username": "testuser",
-    "password": "testpassword"
+    "email": "maya@example.com"
 }
