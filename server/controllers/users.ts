@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { getAll, create, update, getById, deleteById, getUserSessions, getUserMetrics} from "../models/users"
 import { User, DataEnvelope, DataListEnvelope, Session, UserMetrics } from "../types"
-
+import { requireAuth } from "../middleware/auth"
 
 const app = Router()
 
@@ -19,7 +19,7 @@ app.get("/", async (req, res) => {
 })
 // allow this one to have auth since only admin can create users right now
 //  normally, you would have a separate registration endpoint that doesn't require auth
-.post("/", async (req, res) => { 
+.post("/", requireAuth(true), async (req, res) => {
     const userId = req.user?.id ?? null
     if (!userId) {
         res.status(401).send({
@@ -35,7 +35,8 @@ app.get("/", async (req, res) => {
         isSuccess: true,
     }
     res.send(response)
-}).patch("/:id", async (req, res) => { 
+})
+.patch("/:id", requireAuth(true), async (req, res) => { 
     const userId = req.user?.id ?? null
     if (!userId) {
         res.status(401).send({
@@ -61,7 +62,8 @@ app.get("/", async (req, res) => {
         isSuccess: true,
     }
     res.send(response)
-}).get("/:id", async (req, res) => { 
+})
+.get("/:id", requireAuth(true), async (req, res) => { 
     const userId = req.user?.id ?? null
     if (!userId) {
         res.status(401).send({
@@ -92,7 +94,8 @@ app.get("/", async (req, res) => {
         isSuccess: true,
     }
     res.send(response)
-}).delete("/:id", async (req, res) => { 
+})
+.delete("/:id", requireAuth(true), async (req, res) => { 
     const userId = req.user?.id ?? null
     if (!userId) {
         res.status(401).send({
@@ -117,7 +120,7 @@ app.get("/", async (req, res) => {
         message: deletedCount > 0 ? "User deleted successfully" : "User not found",
     }
     res.send(response)
-}).get("/:id/sessions", async (req, res) => { 
+}).get("/:id/sessions", requireAuth(), async (req, res) => {
     const userId = req.user?.id ?? null
     if (!userId) {
         res.status(401).send({
@@ -135,7 +138,7 @@ app.get("/", async (req, res) => {
         total: sessions.length,
     }
     res.send(response)
-}).get("/:id/metrics", async (req, res) => {
+}).get("/:id/metrics", requireAuth(), async (req, res) => {
     const userId = req.user?.id ?? null
     if (!userId) {
         res.status(401).send({

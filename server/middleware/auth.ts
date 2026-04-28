@@ -37,32 +37,32 @@ export function validateJWT(req: Request, _res: Response, next: NextFunction) {
 }
 
 // Returns a function that express can call 
-// export function requireAuth(role?: string, userId?: number) {
-//     return (req: Request, res: Response, next: NextFunction) => {
-//         if (!req.user) {
-//             return res.status(401).send({
-//                 data: null,
-//                 isSuccess: false,
-//                 message: "You must login to access this resource",
-//             })
-//         }
-//         // fix: i think right now it's isAdmin not role
-//         if (role && req.user.role !== role) {
-//             return res.status(403).send({
-//                 data: null,
-//                 isSuccess: false,
-//                 message: "You do not have the required role to access this resource",
-//             })
-//         }
+export function requireAuth(isAdmin?: boolean, userId?: number) {
+    return (req: Request, res: Response, next: NextFunction) => {
+        if (!req.user) {
+            return res.status(401).send({
+                data: null,
+                isSuccess: false,
+                message: "You must login to access this resource",
+            })
+        }
+        // fix: i think right now it's isAdmin not role
+        if (isAdmin && req.user.isAdmin !== isAdmin) {
+            return res.status(403).send({
+                data: null,
+                isSuccess: false,
+                message: "You do not have the required role to access this resource",
+            })
+        }
+        
+        if (userId && req.user.id !== userId) {
+            return res.status(403).send({
+                data: null,
+                isSuccess: false,
+                message: "You do not have permission to access this resource",
+            })
+        }
 
-//         if (userId && req.user.id !== userId) {
-//             return res.status(403).send({
-//                 data: null,
-//                 isSuccess: false,
-//                 message: "You do not have permission to access this resource",
-//             })
-//         }
-
-//         next()
-//     }
-// }
+        next()
+    }
+}

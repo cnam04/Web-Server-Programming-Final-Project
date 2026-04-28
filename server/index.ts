@@ -6,7 +6,7 @@ import usersController from "./controllers/users"
 import friendsController from "./controllers/friends"
 import sessionsController from "./controllers/sessions"
 import authController from "./controllers/auth"
-import { validateJWT } from "./middleware/auth"
+import { validateJWT, requireAuth } from "./middleware/auth"
 
 const PORT = process.env.PORT ?? 3000
 const SERVER = process.env.SERVER ?? "localhost"
@@ -14,12 +14,16 @@ const STATIC_DIR = process.env.STATIC_DIR ?? "client/dist"
 
 const app = express()
 
-
-app.use((_req, res, next) => {
+// Middleware
+app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*") // Allow requests from any origin
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE") // Allow specific HTTP methods
     res.setHeader("Access-Control-Allow-Headers", "*") // Allow specific headers
     next()
+    if (req.method === "OPTIONS") {
+        res.sendStatus(200)
+        return
+    }
 })
 .use(express.json()) // Middleware to parse JSON request bodies
 .use(validateJWT) // Middleware to validate JWT and attach user to request if valid
@@ -27,9 +31,9 @@ app.use((_req, res, next) => {
 // routes
 app.use(express.static(STATIC_DIR))
 .use ("/api/users", usersController)
-.use ("/api/friends", friendsController)
-.use ("/api/sessions", sessionsController)
-.use ("/api/auth", authController)
+.use ("/api/friends", requireAuth(), friendsController)
+.use ("/api/sessions", requireAuth(), sessionsController)
+.use ("/api/auth", authController) // auth routes are public since they are for logging in and getting tokens, but the controller will handle checking credentials and returning appropriate responses
  // error handling
  app.use(
     (
