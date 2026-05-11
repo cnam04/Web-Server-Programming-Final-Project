@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import { useAuthStore } from '@/stores/authStore'
 import useFriendsStore from '@/stores/friendsStore'
+import { getUsers } from '@/services/users'
+import type { User } from '@/types'
 
 const props = defineProps<{
   width: number
@@ -17,6 +19,9 @@ const userStore = useUserStore()
 const authStore = useAuthStore()
 const friendsStore = useFriendsStore()
 
+const AUTOCOMPLETE_PAGE_SIZE = 8
+const SEARCH_DEBOUNCE_MS = 250
+
 const currentFriendIds = computed(() => authStore.currentUser?.friendIds ?? [])
 
 const friends = computed(() => {
@@ -27,22 +32,108 @@ const friends = computed(() => {
     : userStore.users.filter((u) => currentFriendIds.value.includes(u.id))
 })
 
-const nonFriends = computed(() => {
-  const currentUser = authStore.currentUser
-  if (!currentUser) return []
+const searchQuery = ref('')
+const remoteSuggestions = ref<User[]>([])
+const isSearching = ref(false)
+const selectedUser = ref<User | null>(null)
 
+type AutocompleteOption = {
+  label: string
+  value: User
+}
+
+const blockedUserIds = computed(() => {
+  const currentUser = authStore.currentUser
+  const ids = new Set<number>()
+  if (!currentUser) return ids
+
+  ids.add(currentUser.id)
   const friendIds =
     friends.value.length > 0
       ? friends.value.map((friend) => friend.id)
       : currentFriendIds.value
+  friendIds.forEach((id) => ids.add(id))
 
-  return userStore.users.filter(
-    (u) => u.id !== currentUser.id && !friendIds.includes(u.id)
-  )
+  return ids
 })
 
-const searchQuery = ref('')
-const testText = ref('')
+const suggestedUsers = computed(() =>
+  remoteSuggestions.value.filter((user) => !blockedUserIds.value.has(user.id))
+)
+
+const autocompleteOptions = computed<AutocompleteOption[]>(() =>
+  suggestedUsers.value.map((user) => ({
+    label: user.username,
+    value: user,
+  }))
+)
+
+function handleAutocompleteSelect(option: User | undefined) {
+  selectedUser.value = option ?? null
+}
+
+let debounceTimer: ReturnType<typeof setTimeout> | undefined
+let latestSearchId = 0
+
+async function fetchSuggestions(query: string) {
+  const trimmedQuery = query.trim()
+  if (!trimmedQuery) {
+    remoteSuggestions.value = []
+    isSearching.value = false
+    return
+  }
+
+  const searchId = ++latestSearchId
+  isSearching.value = true
+
+  try {
+    const response = await getUsers({
+      search: trimmedQuery,
+      page: 1,
+      pageSize: AUTOCOMPLETE_PAGE_SIZE,
+    })
+
+    if (searchId !== latestSearchId) return
+    remoteSuggestions.value = response.data
+  } catch {
+    if (searchId !== latestSearchId) return
+    remoteSuggestions.value = []
+  } finally {
+    if (searchId === latestSearchId) {
+      isSearching.value = false
+    }
+  }
+}
+
+watch(searchQuery, (value) => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+
+  const trimmedValue = value.trim()
+  if (!trimmedValue) {
+    latestSearchId++
+    selectedUser.value = null
+    remoteSuggestions.value = []
+    isSearching.value = false
+    return
+  }
+
+  if (selectedUser.value && trimmedValue !== selectedUser.value.username) {
+    selectedUser.value = null
+  }
+
+  debounceTimer = setTimeout(() => {
+    void fetchSuggestions(trimmedValue)
+  }, SEARCH_DEBOUNCE_MS)
+})
+
+onBeforeUnmount(() => {
+  latestSearchId++
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+})
 
 async function addFriend(friendId: number) {
   const currentUser = authStore.currentUser
@@ -62,6 +153,13 @@ async function addFriend(friendId: number) {
   if (friend && !friend.friendIds.includes(currentUser.id)) {
     friend.friendIds.push(currentUser.id)
   }
+
+  if (selectedUser.value?.id === friendId) {
+    selectedUser.value = null
+    searchQuery.value = ''
+  }
+
+  remoteSuggestions.value = remoteSuggestions.value.filter((user) => user.id !== friendId)
 }
 
 async function removeFriend(friendId: number) {
@@ -106,45 +204,51 @@ async function removeFriend(friendId: number) {
 
       <div v-else>
         <!-- Search bar -->
-        <div class="field mb-4">
-          <div class="control has-icons-left">
-            <input
-              v-model="searchQuery"
-              class="input sidebar-input"
-              type="text"
-              placeholder="Search users..."
-            />
-            <span class="icon is-left sidebar-icon">
-              <i class="fas fa-search"></i>
-            </span>
-          </div>
-        </div>
-        <o-field label="Test Oruga">
-          <o-input v-model="testText" placeholder="Type here" />
+        <o-field label="Search users" class="mb-4">
+          <o-autocomplete
+            v-model:input="searchQuery"
+            class="sidebar-autocomplete"
+            :options="autocompleteOptions"
+            backend-filtering
+            placeholder="Search users..."
+            :loading="isSearching"
+            clearable
+            open-on-focus
+            @select="handleAutocompleteSelect"
+          />
         </o-field>
+
         <!-- Add Friends Section -->
         <p class="sidebar-section-label">Add Friends</p>
 
-        <div v-if="nonFriends.length === 0" class="has-text-centered py-3">
-          <p class="sidebar-muted">You're friends with everyone!</p>
+        <div v-if="!selectedUser && searchQuery.trim().length === 0" class="has-text-centered py-3">
+          <p class="sidebar-muted">Start typing to search for users.</p>
         </div>
 
-        <div
-          v-for="user in nonFriends"
-          :key="user.id"
-          class="sidebar-user-row"
-        >
+        <div v-else-if="!selectedUser && isSearching" class="has-text-centered py-3">
+          <p class="sidebar-muted">Searching users...</p>
+        </div>
+
+        <div v-else-if="!selectedUser && suggestedUsers.length === 0" class="has-text-centered py-3">
+          <p class="sidebar-muted">No matching users to add.</p>
+        </div>
+
+        <div v-else-if="!selectedUser" class="has-text-centered py-3">
+          <p class="sidebar-muted">Select a user from the dropdown to add.</p>
+        </div>
+
+        <div v-else class="sidebar-user-row">
           <div class="sidebar-user-info">
             <figure class="image is-32x32 mr-3">
               <img
                 class="is-rounded"
-                :src="user.imageLink || 'https://bulma.io/images/placeholders/32x32.png'"
-                :alt="user.username"
+                :src="selectedUser.imageLink || 'https://bulma.io/images/placeholders/32x32.png'"
+                :alt="selectedUser.username"
               />
             </figure>
-            <span class="sidebar-username">{{ user.username }}</span>
+            <span class="sidebar-username">{{ selectedUser.username }}</span>
           </div>
-          <button class="button is-small is-success is-rounded" @click="addFriend(user.id)">
+          <button class="button is-small is-success is-rounded" @click="addFriend(selectedUser.id)">
             Add
           </button>
         </div>
@@ -249,21 +353,15 @@ async function removeFriend(friendId: number) {
   color: var(--sb-text);
 }
 
-.sidebar-input {
+.sidebar-autocomplete :deep(input) {
   background: var(--sb-input-bg) !important;
   border-color: var(--sb-divider) !important;
   color: var(--sb-text) !important;
 }
-.sidebar-input::placeholder {
-  color: var(--sb-muted) !important;
-}
-.sidebar-input:focus {
+
+.sidebar-autocomplete :deep(input:focus) {
   border-color: #4a9eff !important;
   box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2) !important;
-}
-
-.sidebar-icon {
-  color: var(--sb-muted) !important;
 }
 
 .sidebar-section-label {

@@ -1,10 +1,35 @@
 import useSessionStore from '../stores/sessionStore'
-import type { DataListEnvelope, DataEnvelope } from '../../../server/types/dataEnvelopes'
+import type { DataListEnvelope, DataEnvelope, PagingRequest } from '../../../server/types/dataEnvelopes'
 import type { User, UserId, UpdateUserInput } from '../../../server/types'
 
-export function getUsers(){
+function buildUsersQuery(params: PagingRequest = {}) {
+    const query = new URLSearchParams()
+
+    if (typeof params.search === 'string' && params.search.trim().length > 0) {
+        query.set('search', params.search.trim())
+    }
+    if (params.page !== undefined) {
+        query.set('page', String(params.page))
+    }
+    if (params.pageSize !== undefined) {
+        query.set('pageSize', String(params.pageSize))
+    }
+    if (typeof params.sortBy === 'string' && params.sortBy.trim().length > 0) {
+        query.set('sortBy', params.sortBy)
+    }
+    if (params.descending !== undefined) {
+        query.set('descending', String(params.descending))
+    }
+
+    return query.toString()
+}
+
+export function getUsers(params: PagingRequest = {}){
     const session = useSessionStore()
-    return session.api<DataListEnvelope<User>>('/users')
+    const queryString = buildUsersQuery(params)
+    const endpoint = queryString.length > 0 ? `/users?${queryString}` : '/users'
+
+    return session.api<DataListEnvelope<User>>(endpoint)
 }
 
 export function getUserById(id: UserId) {

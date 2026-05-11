@@ -1,13 +1,43 @@
 import { Router } from "express"
 import { getAll, create, update, getById, deleteById, getUserSessions, getUserMetrics} from "../models/users"
 import { User, DataEnvelope, DataListEnvelope, Session, UserMetrics } from "../types"
+import { PagingRequest } from "../types/dataEnvelopes"
 import { requireAuth } from "../middleware/auth"
 
 const app = Router()
 
+const MAX_PAGE_SIZE = 100
+
+function parseQueryValue(value: unknown) {
+    if (typeof value === "string") return value
+    if (Array.isArray(value)) return typeof value[0] === "string" ? value[0] : undefined
+    return undefined
+}
+
+function parseNumberParam(value: string | undefined, fallback: number, min = 1, max = Number.MAX_SAFE_INTEGER) {
+    const parsed = Number.parseInt(value ?? "", 10)
+    if (Number.isNaN(parsed)) return fallback
+    return Math.min(max, Math.max(min, parsed))
+}
+
 // allow this one without auth since we are just selecting from a users dropdown to login
 app.get("/", async (req, res) => {
-    const { users, count } = await getAll(req.query)
+    const rawSearch = parseQueryValue(req.query.search)
+    const search = rawSearch?.trim() || undefined
+    const page = parseNumberParam(parseQueryValue(req.query.page), 1)
+    const pageSize = parseNumberParam(parseQueryValue(req.query.pageSize), 10, 1, MAX_PAGE_SIZE)
+    const sortBy = parseQueryValue(req.query.sortBy)
+    const descendingParam = parseQueryValue(req.query.descending)
+
+    const query: PagingRequest = {
+        search,
+        page,
+        pageSize,
+        sortBy,
+        descending: descendingParam === undefined ? undefined : descendingParam.toLowerCase() === "true",
+    }
+
+    const { users, count } = await getAll(query)
     const response: DataListEnvelope<User> = {
         data: users,
         isSuccess: true,
