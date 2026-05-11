@@ -42,6 +42,7 @@ const nonFriends = computed(() => {
 })
 
 const searchQuery = ref('')
+const testText = ref('')
 
 async function addFriend(friendId: number) {
   const currentUser = authStore.currentUser
@@ -118,7 +119,9 @@ async function removeFriend(friendId: number) {
             </span>
           </div>
         </div>
-
+        <o-field label="Test Oruga">
+          <o-input v-model="testText" placeholder="Type here" />
+        </o-field>
         <!-- Add Friends Section -->
         <p class="sidebar-section-label">Add Friends</p>
 
